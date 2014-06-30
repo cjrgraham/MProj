@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>myrl</title>
+    </head>
+
+    <body>
+        <h1>Myrl says...</h1>
+        hello world! <strong>{{ boldmessage }}</strong><br />
+        <a href="/rango/about/">About</a><br />
+    </body>
+
