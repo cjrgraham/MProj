@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-
-{% load static %} <!-- New line -->
-
+{% load static %}
 <html>
-
-    <head>
-        <title>Rango</title>
-    </head>
-
-    <body>
-        <h1>Rango says...</h1>
-        hello world! <strong>{{ boldmessage }}</strong><br />
-        <a href="/rango/about/">About</a><br />
-        <img src="{% static "tileset.png" %}" alt="Picture of Rango" /> <!-- New line -->
-    </body>
-
+<head>
+<title>Javascript Roguelike</title>
+</head>
+<body>
+<script type="text/javascript">
+    DJANGO_STATIC_URL = '{{ STATIC_URL }}';
+</script>
+<img src="{% static 'tileset.png' %}" style="display:none"/> <!-- New line -->
+<script src="{% static 'js/rot.min.js' %}"></script>
+<script src="{% static 'js/game.js' %}"></script>
+<script src="{% static 'js/tile.js' %}"></script>
 </html>

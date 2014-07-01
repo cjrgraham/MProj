@@ -1,13 +1,12 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
-
-    <head>
-        <title>myrl</title>
-    </head>
-
-    <body>
-        <h1>Myrl says...</h1>
-        hello world! <strong>{{ boldmessage }}</strong><br />
-        <a href="/rango/about/">About</a><br />
-    </body>
-
+<head>
+<title>Javascript Roguelike</title>
+</head>
+<body>
+<img src="{% static 'tileset.png' %}" style="display:none"/> <!-- New line -->
+<script src="{% static 'js/rot.min.js' %}"></script>
+<script src="{% static 'js/game.js' %}"></script>
+<script src="{% static 'js/tile.js' %}"></script>
+</html>
