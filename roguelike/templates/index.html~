@@ -5,6 +5,9 @@
 <title>Javascript Roguelike</title>
 </head>
 <body>
+<script type="text/javascript">
+    DJANGO_STATIC_URL = '{{ STATIC_URL }}';
+</script>
 <img src="{% static 'tileset.png' %}" style="display:none"/> <!-- New line -->
 <script src="{% static 'js/rot.min.js' %}"></script>
 <script src="{% static 'js/game.js' %}"></script>
