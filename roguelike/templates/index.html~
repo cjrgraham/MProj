@@ -1,15 +1,25 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html>
 <head>
 <title>Javascript Roguelike</title>
 </head>
 <body>
+
 <script type="text/javascript">
     DJANGO_STATIC_URL = '{{ STATIC_URL }}';
 </script>
+
 <img src="{% static 'tileset.png' %}" style="display:none"/> <!-- New line -->
+<script src="{% static 'js/imageMap.js' %}"></script>
+<script src="{% static 'js/keys.js' %}"></script>
 <script src="{% static 'js/rot.min.js' %}"></script>
 <script src="{% static 'js/game.js' %}"></script>
 <script src="{% static 'js/tile.js' %}"></script>
+<script src="{% static 'js/tile.js' %}"></script>
+<script src="{% static 'js/tiles.js' %}"></script>
+<script src="{% static 'js/entity.js' %}"></script>
+
+<h1>Acknowledgements</h1>
+Made with the rot.js library and the Dawnlike tileset. Also influenced by the rot.js tutorials and the tutorials and code at http://www.codingcookies.com/2013/04/01/building-a-roguelike-in-javascript-part-1/ . Some code is also adapted from that tutorial.
 </html>

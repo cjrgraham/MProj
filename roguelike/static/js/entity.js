@@ -1,14 +1,22 @@
 // Code taken from https://github.com/jokeofweek/jsrogue/blob/part8a/assets/entity.js
+// It has been changed slightly so that the constructor can take auxilliary arguments
+// other than collecitons of templates (by making properties an array containing an
+// object rather than just an object).
 
 Game.Entity = function(properties) {
-    properties = properties || {};
+    properties = properties || [];
+    this._tile = null;
+    this._obstructs = false;
+    this._opacity=false;
+    this.x_coord=properties[1];
+    this.y_coord=properties[2];
     // Create an object which will keep track what mixins we have
     // attached to this entity based on the name property
     this._attachedMixins = {};
     // Create a similar object for groups
     this._attachedMixinGroups = {};
     // Setup the object's mixins
-    var mixins = properties['mixins'] || [];
+    var mixins = properties[0]['mixins'] || [];
     for (var i = 0; i < mixins.length; i++) {
         // Copy over all properties from each mixin as long
         // as it's not the name or the init property. We
@@ -41,3 +49,15 @@ Game.Entity.prototype.hasMixin = function(obj) {
     }
 }
 
+Game.Entity.prototype.setTile = function(char) {
+    this._tile = char;
+    },
+Game.Entity.prototype.getOpacity = function() {
+    return this._opacity;
+    }           
+Game.Entity.prototype.getTile = function() {
+    return this._tile;
+    }
+Game.Entity.prototype.checkObstruction = function() {
+    return this._obstructs;
+    }
