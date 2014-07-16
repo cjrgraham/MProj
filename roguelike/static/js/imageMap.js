@@ -15,7 +15,11 @@ Game.imageMap = {
                 'Door': [0, 0],
                 'Open_Door': [48,0],
                 'Player': [32, 0],
-                'Fogged':[0,32]
+                'Enemy': [32, 0],
+                'Fogged':[0,32],
+                'Target':[48,16],
+                'Chair':[32,16],
+                'Grave':[16,32],
 }
 
 
