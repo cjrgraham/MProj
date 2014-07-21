@@ -5,6 +5,7 @@ var Game = {
     init: function() {
         tileSet = document.createElement('img');
         tileSet.src =  DJANGO_STATIC_URL+'img/tileset.png';
+        //tileSet.src =  'tileset.png';
         var options = {
             layout: 'tile',
             bg: 'transparent',

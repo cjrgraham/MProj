@@ -1,8 +1,5 @@
 Game.Mixins = {};
-
 Game.Mixins.Tile_Mixins = {};
-
-
 Game.Mixins.Tile_Mixins.Tile = {
     name: 'Tile',
     groupName: 'Tile',
@@ -57,7 +54,6 @@ Game.Mixins.Tile_Mixins.WallTile = {
         else if (parts[1] === '0' && (!Map.entities[nCoord] || !(Map.entities[thsCoord]['Wall'].doesContain('N'))))
         {
             this.addConnections('N', 'NE');
-
             if (parts[0] === '0')
             {
                 this.addConnections('NW', 'W', 'SW');
@@ -74,7 +70,6 @@ Game.Mixins.Tile_Mixins.WallTile = {
         else if (parts[1] === Game.getHeight().toString() && (!(Map.entities[thsCoord]['Wall'].doesContain('S'))))
         {
             this.addConnections('S', 'SE');
-
             if (parts[0] === '0')
             {
                 this.addConnections('NW', 'W', 'SW');
@@ -119,28 +114,20 @@ Game.Mixins.Tile_Mixins.WallTile = {
 }
 
 Game.Templates = {};
-
 Game.Templates.TileTemplates = {};
-
-
 Game.Templates.TileTemplates.WallTile = {
     mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.WallTile],
     category: 'Wall'
 };
-
 Game.Templates.TileTemplates.FloorTile = {
     mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.FloorTile],
     category: 'Floor'
 };
-
 Game.Templates.TargetTemplates = {};
-
 Game.Templates.TargetTemplates.Target = {
     category: 'Target'
 };
-
 Game.Mixins.Door_Mixins = {};
-
 Game.Mixins.Door_Mixins.Door = {
     name: 'Door_Tile',
     groupName: 'Door',
@@ -155,40 +142,32 @@ Game.Mixins.Door_Mixins.Door = {
         this._tile = 'Open_Door';
     }
 };
-
 Game.Templates.DoorTemplates = {};
-
 Game.Templates.DoorTemplates.Door = {
     mixins: [Game.Mixins.Door_Mixins.Door], category: 'Door'
 };
-
-
 Game.Templates.CorpseTemplates = {};
-
 Game.Templates.CorpseTemplates.Corpse = {
     category: 'Grave'
 };
-
 Game.Mixins.Actor_Mixins = {};
-
 Game.Templates.ActorTemplates = {};
-
 Game.Mixins.Actor_Mixins.Fighter = {
     name: 'Fighter',
     groupName: 'Actor',
     strike: function(targetObj) {
         var att = this._base_attack;
-        this._messages.push("The "+this._category+
-                " hits the"+" "+targetObj._category);
+        this._messages.push("The " + this._category +
+                " hits the" + " " + targetObj._category);
         targetObj.isStruck(att, this);
     },
     isStruck: function(att, attacker) {
         var dam = att;
         this._curr_health -= dam;
-        if (this._category==='Player')
+        if (this._category === 'Player')
         {
-            this._messages.push("The Player"+
-                " is struck by the "+" "+attacker._category);
+            this._messages.push("The Player" +
+                    " is struck by the " + " " + attacker._category);
         }
         //check if dead
         if (this._curr_health < 0)
@@ -243,24 +222,98 @@ Game.Mixins.Actor_Mixins.Player = {
         };
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
         this._messageDisplay = Game.getTextDisplay();
-        this._messages = []
-        this._visible = {};
+        this._messages = [],
+                this._visible = {};
+        this._roomCenters = [];
+        var rooms = Map.getGrid().getRooms();
+        console.log(rooms.length);
+        for (var i = 0; i < rooms.length; i++) {
+            this._roomCenters.push(rooms[i].getCenter());
+        }
+        this._targetRoom = 0;
     },
-    processMessages: function (){  
+    processMessages: function() {
         this._messageDisplay.clear();
         this._messages = this._messages.join("\r\n");
-        this._messageDisplay.drawText(1,1,this._messages+'', 23)
-        console.log(this._messages)
+        this._messageDisplay.drawText(1, 1, this._messages + '', 23)
         this._messages = []
     },
-    act: function() {        
-        this.drawFOV();
+    act: function() {
         Map.getEngine().lock();
+        this._timesMoved = 0;
+        this.drawFOV();
         this.processMessages();
         window.addEventListener("keydown", this);
         this.drawFOV();
     },
+    exploreMap: function() {
+//        console.log("currentRoom+amount" + this._targetRoom + ',' + this._roomCenters.length)
+        if (!(this._targetRoom <= this._roomCenters.length))
+        {
+
+        }
+        else
+        {
+            var coord = this._roomCenters[this._targetRoom] + '';
+            var coordParts = coord.split(',');
+            var ents = Map.getEntities();
+            var Path = new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
+                return ents[x + ',' + y]['Floor'];
+            });
+            var steps = [];
+            //console.log("CoordParts" + coordParts)
+            Path.compute(this.x_coord, this.y_coord, function(x, y) {
+                steps.push([x, y]);
+            });
+
+            if (steps.length > 1)
+            {
+                var nextX = steps[1][0], nextY = steps[1][1];
+                this.move(nextX, nextY);
+            }
+            else
+            {
+                this._targetRoom++;
+                console.log(this._targetRoom);
+            }
+
+        }
+
+    },
+    lookForEnemies: function() {
+        var enemies = [];
+        this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
+            var coord = x + ',' + y;
+            if (Map.entities[coord]['Enemy']) {
+                enemies.push([x, y]);
+            }
+        });
+        return enemies;
+    },
+    attackEnemy: function(coord) {
+        var coordPartsX = coord[0], coordPartsY = coord[1];
+        var ents = Map.getEntities();
+        var Path = new ROT.Path.Dijkstra(parseInt(coordPartsX), parseInt(coordPartsY), function(x, y) {
+            return ents[x + ',' + y]['Floor'];
+        });
+        var steps = [];
+        //console.log("CoordParts" + coordParts)
+        Path.compute(this.x_coord, this.y_coord, function(x, y) {
+            steps.push([x, y]);
+        });
+        if (steps.length > 1)
+        {
+            var nextX = steps[1][0], nextY = steps[1][1];
+            this.move(nextX, nextY);
+        }
+
+    },
     move: function(targetX, targetY) {
+        if (this._timesMoved++ > 0)
+        {
+            console.log(this._timesMoved);
+            return;
+        }
         var ents = Map.entities[this.x_coord + ',' + this.y_coord];
         var target = targetX + ',' + targetY;
         var targEnts = Map.entities[target];
@@ -282,14 +335,8 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     },
     handleEvent: function(e) {
-        if (Game.keys.Directions[e.keyCode])
-        {
-            var Offset = Game.keys.Directions[e.keyCode];
-            var xOffset = Offset[0], yOffset = Offset[1];
-            var targetX = this.x_coord + xOffset, targetY = this.y_coord + yOffset;
-            this.move(targetX, targetY);
-        }
-        this.drawFOV();
+        var text = $('#inputArea').val();
+        eval(text);
         window.removeEventListener("keydown", this);
         Map.getEngine().unlock();
     },
@@ -319,8 +366,6 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     }
 };
-
-
 Game.Mixins.Actor_Mixins.Enemy = {
     name: 'Enemy',
     groupName: 'Actor',
@@ -337,7 +382,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._targetY = null;
         this._whetherSeen = false;
         var that = this;
-        this._messages=[];
+        this._messages = [];
         var fovCallback = function(x, y) {
             if (Map.isClear(x + ',' + y, that.getOpacity))
                 return true;
@@ -346,7 +391,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
     },
     act: function() {
-        this._messages=[];
+        this._messages = [];
         this._displacements = [];
         var that = this;
         var seen = false;
@@ -506,7 +551,6 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._whetherSeen = boolean;
     }
 };
-
 Game.Templates.ActorTemplates.PlayerTemplate = {
     category: 'Player',
     attributes: {
@@ -519,7 +563,6 @@ Game.Templates.ActorTemplates.PlayerTemplate = {
         Game.Mixins.Actor_Mixins.Fighter,
         Game.Mixins.Actor_Mixins.playerDies]
 };
-
 Game.Templates.ActorTemplates.EnemyTemplate = {
     category: 'Enemy',
     attributes: {
@@ -530,5 +573,5 @@ Game.Templates.ActorTemplates.EnemyTemplate = {
     },
     mixins: [Game.Mixins.Actor_Mixins.Enemy,
         Game.Mixins.Actor_Mixins.Fighter,
-    Game.Mixins.Actor_Mixins.enemyDies]
+        Game.Mixins.Actor_Mixins.enemyDies]
 };

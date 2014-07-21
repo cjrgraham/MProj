@@ -4,7 +4,8 @@ var Game = {
     _screenHeight: 24,
     init: function() {
         tileSet = document.createElement('img');
-        tileSet.src =  DJANGO_STATIC_URL+'img/tileset.png';
+        //tileSet.src =  DJANGO_STATIC_URL+'img/tileset.png';
+        tileSet.src =  'tileset.png';
         var options = {
             layout: 'tile',
             bg: 'transparent',
@@ -14,7 +15,7 @@ var Game = {
             tileMap: Game.imageMap
         };
         this._display = new ROT.Display(options);
-        this._textDisplay = new ROT.Display({width: 25, height:70, });
+        this._textDisplay = new ROT.Display({width: 25, height:70});
     },
     getTextDisplay: function() {
         return this._textDisplay;

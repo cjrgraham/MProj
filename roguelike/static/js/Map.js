@@ -10,7 +10,7 @@ var Map = {
         //1405130628830
         //1405172077329
         ROT.RNG.setSeed(1405130628830);
-        this._map = digger = new ROT.Map.Digger();
+        this._grid = digger = new ROT.Map.Digger();
         var oDirs = ['N', 'NW', 'W', 'SW'];
         var thsDirs = ['S', 'SE', 'E', 'NE'];
         var offset = [[0, -1], [-1, -1], [-1, 0], [-1, 1]];
@@ -36,7 +36,7 @@ var Map = {
         var setDoor = function(x, y) {
             new Game.Entity({template: Game.Templates.DoorTemplates.Door, x_coord: x, y_coord: y});
         }
-        var rooms = this._map.getRooms();
+        var rooms = this._grid.getRooms();
         for (var i = 0; i < rooms.length; i++) {
             rooms[i].getDoors(setDoor);
         }
@@ -195,6 +195,9 @@ var Map = {
     getEntities: function() {
         return this.entities;
     },
+    getGrid: function() {
+        return this._grid;
+    },
     getEngine: function() {
         return this._engine;
     },
@@ -250,22 +253,23 @@ var Map = {
         return coords;
     },
     placeNewPlayer: function() {
-        var rooms = this._map.getRooms();
+        var rooms = this._grid.getRooms();
         var x = rooms[0].getLeft(), y = rooms[0].getTop();
         var player = new Game.Entity({template: Game.Templates.ActorTemplates.PlayerTemplate,
             x_coord: x, y_coord: y});
+        
+                new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
+            x_coord: rooms[2].getRight(), y_coord: rooms[2].getBottom()});
 
         new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[0].getRight(), y_coord: rooms[0].getBottom()});
+            x_coord: rooms[3].getRight(), y_coord: rooms[3].getTop()});
 
         new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[0].getRight(), y_coord: rooms[0].getTop()});
+            x_coord: rooms[4].getLeft(), y_coord: rooms[4].getBottom()});
 
         new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[0].getLeft(), y_coord: rooms[0].getBottom()});
+            x_coord: rooms[5].getLeft(), y_coord: rooms[5].getBottom()});
 
-        new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[1].getLeft(), y_coord: rooms[1].getBottom()});
 
         player.drawFOV();
         Game.setPlayer(player);
@@ -294,7 +298,7 @@ window.onload = function() {
     Map.setAllWalls();
     Map.placeNewPlayer();
     Map.getEngine().start();
-    console.log(ROT.RNG.getSeed());
+//    console.log(ROT.RNG.getSeed());
 }
 
 
