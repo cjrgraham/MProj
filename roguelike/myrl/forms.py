@@ -1,0 +1,17 @@
+# adapted to my own app from the tutorials at http://www.tangowithdjango.com
+from django import forms
+from models import UserProfile
+from django.contrib.auth.models import User
+
+class UserForm(forms.ModelForm):
+    username = forms.CharField(help_text="Please enter a username.")
+    password = forms.CharField(widget=forms.PasswordInput(), help_text="Please enter a password.")
+
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ()

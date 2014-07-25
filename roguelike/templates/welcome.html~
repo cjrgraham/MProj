@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block head_block %}
+{% endblock %}
+
+
+{% block body_block %}
+
+        <h1>with Myrl</h1>
+{% if user.is_authenticated %}
+        Good job
+        {% else %}
+  Please login or register
+        {% endif %}
+
+{% endblock %}
