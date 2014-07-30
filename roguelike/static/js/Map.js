@@ -1,20 +1,19 @@
 var Map = {
-    entities: {},
     _engine: null,
     _scheduler: null,
-    init: function() {
-        this._scheduler = (new ROT.Scheduler.Simple());
-        this._engine = new ROT.Engine(this._scheduler);
-    },
+    _player:null,
+    _level: 0,
     generateMap: function() {
         //1405130628830
         //1405172077329
-        ROT.RNG.setSeed(1405130628830);
+        // ROT.RNG.setSeed(1405130628830);
+        this.entities = {};
+        this._scheduler = (new ROT.Scheduler.Simple());
+        this._engine = new ROT.Engine(this._scheduler);
         this._grid = digger = new ROT.Map.Digger();
         var oDirs = ['N', 'NW', 'W', 'SW'];
         var thsDirs = ['S', 'SE', 'E', 'NE'];
         var offset = [[0, -1], [-1, -1], [-1, 0], [-1, 1]];
-        var that = this;
         var digCallback = function(x, y, value) {
             var key = x + ',' + y;
             if (value) {
@@ -26,7 +25,7 @@ var Map = {
                     wall.updateNeighbour(key, nCoord, oDirs[i], thsDirs[i]);
                 }
             }
-            else 
+            else
                 new Game.Entity({template: Game.Templates.TileTemplates.FloorTile, x_coord: x, y_coord: y, kind: 'Concrete'});
 
         };
@@ -39,8 +38,10 @@ var Map = {
         var rooms = this._grid.getRooms();
         for (var i = 0; i < rooms.length; i++) {
             rooms[i].getDoors(setDoor);
-        }
 
+        }
+        this.setAllWalls();
+        this.sortRooms();
     },
     setWallTile: function(key) {
         var tile = this.entities[key]['Wall'];
@@ -204,7 +205,7 @@ var Map = {
     addToSchedule: function(actor) {
         this._scheduler.add(actor, true);
     },
-    takeFromSchedule: function(actor){
+    takeFromSchedule: function(actor) {
         this._scheduler.remove(actor);
     },
     setAllWalls: function() {
@@ -252,51 +253,53 @@ var Map = {
         }
         return coords;
     },
-    placeNewPlayer: function() {
+    sortRooms: function() {
         var rooms = this._grid.getRooms();
         var x = rooms[0].getLeft(), y = rooms[0].getTop();
-        var player = new Game.Entity({template: Game.Templates.ActorTemplates.PlayerTemplate,
+        var level = Game.Levels[this._level++];
+        for (var i = 1; i < rooms.length-1; i++) {
+            var roomTemplate = level[Math.floor(Math.random() * level.length)];
+            new Game.Room({Room: rooms[i], template: roomTemplate});
+        }
+        new Game.Room({Room: rooms[rooms.length-1], template: 
+                Game.Templates.RoomTemplates.StairRoom});
+        if (this._player)
+            Game.Templates.ActorTemplates.PlayerTemplate['attributes']=
+               {
+        _name:"Player",
+        _max_health: this._player._max_health,
+        _curr_health: this._player._curr_health,
+        _base_attack: this._player._base_attack,
+        _base_defense: this._player._base_defense
+    };
+        this._player= new Game.Entity({template: Game.Templates.ActorTemplates.PlayerTemplate,
             x_coord: x, y_coord: y});
-        
-                new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[2].getRight(), y_coord: rooms[2].getBottom()});
 
-        new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[3].getRight(), y_coord: rooms[3].getTop()});
-
-        new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[4].getLeft(), y_coord: rooms[4].getBottom()});
-
-        new Game.Entity({template: Game.Templates.ActorTemplates.EnemyTemplate,
-            x_coord: rooms[5].getLeft(), y_coord: rooms[5].getBottom()});
-
-
-        player.drawFOV();
-        Game.setPlayer(player);
+        Game.clearDisplay();
+        this._player.drawFOV();
+        Game.setPlayer(this._player);
     }
 }
 
 
 window.onload = function() {
     Game.init();
-    Map.init();
-    var playField =Game.getDisplay().getContainer()
-    $('#gameArea').append(playField).slimScrollH({
-    width: '95%',
-    height: '20%'
-    }).width('');
+    var playField = Game.getDisplay().getContainer()
+    $('#gameArea').append(playField).dragscrollable();
     //
     $('#gameArea').slimScroll({width: '95%',
-    height: '20%'})
+        height: '20%'})
     //
-    var messageField =Game.getTextDisplay().getContainer()
+    var messageField = Game.getTextDisplay().getContainer()
     $('#messages').append(messageField);
     $('#messages').slimScroll({
-    height: '200px'
+        height: '200px'
     });
+    var statusField = Game.getStatDisplay().getContainer()
+    $('#status').append(statusField);
+
     Map.generateMap();
-    Map.setAllWalls();
-    Map.placeNewPlayer();
+
     Map.getEngine().start();
 //    console.log(ROT.RNG.getSeed());
 }

@@ -6,20 +6,28 @@ from myrl.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
+from models import UserProfile
 
+@login_required
+def save_code(request):
+    #context = RequestContext(request):
+    code = request.GET['code']
+    user = request.user
+    profile = UserProfile.objects.get(user=user)
+    profile.code = code
+    profile.save()
+    return HttpResponse()
+
+
+@login_required
 def index(request):
-    # Request the context of the request.
-    # The context contains information such as the client's machine details, for example.
     context = RequestContext(request)
-
-    # Construct a dictionary to pass to the template engine as its context.
-    # Note the key boldmessage is the same as {{ boldmessage }} in the template!
-    context_dict = {'boldmessage': "I am bold font from the context"}
-
-    # Return a rendered response to send to the client.
-    # We make use of the shortcut function to make our lives easier.
-    # Note that the first parameter is the template we wish to use.
+    user = request.user
+    profile = UserProfile.objects.get(user=user)
+    theCode = profile.code
+    context_dict = {'boldmessage': "I am bold font from the context", 'theCode':theCode}
     return render_to_response('index.html', context_dict, context)
+
 
 def register(request):
     # Like before, get the request's context.
@@ -59,9 +67,11 @@ def register(request):
 
             # Now we save the UserProfile model instance.
             profile.save()
-
-            # Update our variable to tell the template registration was successful.
-            registered = True
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return HttpResponseRedirect('/play/')
 
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
@@ -98,7 +108,6 @@ def user_login(request):
         # This information is obtained from the login form.
         username = request.POST['username']
         password = request.POST['password']
-        print username
 
         # Use Django's machinery to attempt to see if the username/password
         # combination is valid - a User object is returned if it is.
@@ -113,7 +122,6 @@ def user_login(request):
                 # If the account is valid and active, we can log the user in.
                 # We'll send the user back to the homepage.
                 login(request, user)
-                print "works"
                 return HttpResponseRedirect('/play/')
             else:
                 # An inactive account was used - no logging in!

@@ -10,9 +10,8 @@
 
         <h1>Welcome to Myrl!</h1>
 {% if user.is_authenticated %}
-        Good job
         {% else %}
-  Please login or register
+  Please login or <a href="/register">register.</a>
         {% endif %}
 
 {% endblock %}

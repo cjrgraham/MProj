@@ -9,11 +9,6 @@ Game.Element = function(properties) {
     // Create a similar object for groups
     this._attachedMixinGroups = {};
     // Setup the object's mixins
-    if (properties['template']['category'])
-    {
-        this._category=properties['template']['category']
-        this._tile=this._category;
-    }
     
     var mixins = properties['template']['mixins'] || {};
     for (var i = 0; i < mixins.length; i++) {

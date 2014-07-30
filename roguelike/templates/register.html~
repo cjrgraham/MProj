@@ -1,11 +1,11 @@
 <!-- adapted to my own app from the tutorials at http://www.twithdjango.com -->
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Myrl</title>
-    </head>
+{% extends 'navbar.html' %}
+{% load static %}
 
-    <body>
+
+{% block body_block %}
+
         <h1>Register with Myrl</h1>
 
         {% if registered %}
@@ -14,7 +14,7 @@
         {% else %}
         Myrl says: <strong>register here!</strong><br />
 
-        <form id="user_form" method="post" action="/myrl/register/"
+        <form id="user_form" method="post" action="/register/"
                 enctype="multipart/form-data">
 
             {% csrf_token %}
@@ -29,5 +29,4 @@
             <input type="submit" name="submit" value="Register" />
         </form>
         {% endif %}
-    </body>
-</html>
+{% endblock %}

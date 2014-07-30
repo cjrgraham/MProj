@@ -1,4 +1,5 @@
 Game.Mixins = {};
+
 Game.Mixins.Tile_Mixins = {};
 Game.Mixins.Tile_Mixins.Tile = {
     name: 'Tile',
@@ -117,7 +118,8 @@ Game.Templates = {};
 Game.Templates.TileTemplates = {};
 Game.Templates.TileTemplates.WallTile = {
     mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.WallTile],
-    category: 'Wall'
+    category: 'Wall',
+    name: 'Wall'
 };
 Game.Templates.TileTemplates.FloorTile = {
     mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.FloorTile],
@@ -125,49 +127,115 @@ Game.Templates.TileTemplates.FloorTile = {
 };
 Game.Templates.TargetTemplates = {};
 Game.Templates.TargetTemplates.Target = {
-    category: 'Target'
+    category: 'Target',
+    name: 'Target'
 };
+
+Game.Mixins.Stair_Mixins = {};
+Game.Mixins.Stair_MixinsStair = {
+    name: 'Stair_Tile',
+    groupName: 'Stair',
+};
+
+Game.Templates.StairTemplates = {};
+Game.Templates.StairTemplates.Stair = {
+    category: 'Stair',
+    name: 'Stair'
+};
+
+Game.Templates.DecorationTemplates = {};
+Game.Templates.DecorationTemplates.SkullTile = {
+    category: 'Decoration',
+    name: 'Skull'
+};
+
+Game.Templates.DecorationTemplates.BoneTile = {
+    category: 'Decoration',
+    name: 'Bone'
+};
+
 Game.Mixins.Door_Mixins = {};
 Game.Mixins.Door_Mixins.Door = {
     name: 'Door_Tile',
     groupName: 'Door',
     init: function() {
-        this._tile = 'Door';
         this._obstructs = true;
         this._opacity = true;
     },
-    open: function() {
+    open: function(entity) {
         this._obstructs = false;
         this._opacity = false;
         this._tile = 'Open_Door';
+        Game.queMessage("The " + entity._name +
+                " opens the door.");
     }
 };
 Game.Templates.DoorTemplates = {};
 Game.Templates.DoorTemplates.Door = {
-    mixins: [Game.Mixins.Door_Mixins.Door], category: 'Door'
+    mixins: [Game.Mixins.Door_Mixins.Door], category: 'Door',
+    name: 'Door'
 };
 Game.Templates.CorpseTemplates = {};
 Game.Templates.CorpseTemplates.Corpse = {
-    category: 'Grave'
+    category: 'Grave',
+    name: 'Grave'
 };
 Game.Mixins.Actor_Mixins = {};
 Game.Templates.ActorTemplates = {};
-Game.Mixins.Actor_Mixins.Fighter = {
-    name: 'Fighter',
+
+Game.Mixins.Actor_Mixins.normalStrike = {
+    name: 'normalStrike',
     groupName: 'Actor',
     strike: function(targetObj) {
         var att = this._base_attack;
-        this._messages.push("The " + this._category +
-                " hits the" + " " + targetObj._category);
+        Game.queMessage("The " + this._name +
+                " hits the" + " " + targetObj._name + ".");
         targetObj.isStruck(att, this);
-    },
+    }
+}
+
+Game.Mixins.Actor_Mixins.clubStrike = {
+    name: 'clubStrike',
+    groupName: 'Actor',
+    strike: function(targetObj) {
+        var att = this._base_attack;
+
+        if (!this._clubRaisedAt)
+        {
+            Game.queMessage("The " + this._name +
+                    " raises his club to smash the" + " " + targetObj._name + "!");
+
+            this._clubRaisedAt = targetObj.getCoord();
+            Game.getPlayer().setImminentStrike(true);
+            return;
+        }
+        else if (Game.getPlayer().getCoord() !== this._clubRaisedAt)
+        {
+            console.log("Dodge")
+            Game.queMessage("The Player Dodged the " + this._name + "'s club!");
+            Game.queMessage("The " + this._name + " loses its balance.");
+            this._clubRaisedAt = false;
+            this._offBalance = true;
+            return;
+        }
+        Game.queMessage("The " + this._name +
+                " smashes the" + " " + targetObj._name + " with his club!");
+        targetObj.isStruck(att, this);
+        this._clubRaisedAt = false;
+    }
+}
+
+
+Game.Mixins.Actor_Mixins.getsStruck = {
+    name: 'getsStruck',
+    groupName: 'Actor',
     isStruck: function(att, attacker) {
         var dam = att;
         this._curr_health -= dam;
         if (this._category === 'Player')
         {
-            this._messages.push("The Player" +
-                    " is struck by the " + " " + attacker._category);
+            Game.queMessage("The Player" +
+                    " is struck by the " + " " + attacker._name + ".");
         }
         //check if dead
         if (this._curr_health < 0)
@@ -175,11 +243,13 @@ Game.Mixins.Actor_Mixins.Fighter = {
     }
 }
 
+
+
 Game.Mixins.Actor_Mixins.enemyDies = {
     name: 'Dies',
     groupName: 'Actor',
     dies: function() {
-        Game.getPlayer()._messages.push("The enemy dies!");
+        Game.queMessage("The " + this._name + " dies!");
         //remove from schedule
         Map.takeFromSchedule(this);
         var key = this.x_coord + ',' + this.y_coord;
@@ -189,6 +259,7 @@ Game.Mixins.Actor_Mixins.enemyDies = {
         // remove target, if one exists
         delete Map.entities[this._targetKey]['Target']
         ents['Corpse'] = new Game.Entity({template: Game.Templates.CorpseTemplates.Corpse});
+        //Map.generateMap();
     }
 }
 
@@ -213,7 +284,6 @@ Game.Mixins.Actor_Mixins.Player = {
     groupName: 'Actor',
     init: function() {
         Map.addToSchedule(this);
-        this._tile = 'Player';
         var that = this;
         var fovCallback = function(x, y) {
             if (Map.isClear(x + ',' + y, that.getOpacity))
@@ -222,6 +292,7 @@ Game.Mixins.Actor_Mixins.Player = {
         };
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
         this._messageDisplay = Game.getTextDisplay();
+        this._statusDisplay = Game.getStatDisplay();
         this._messages = [],
                 this._visible = {};
         this._roomCenters = [];
@@ -231,24 +302,83 @@ Game.Mixins.Actor_Mixins.Player = {
             this._roomCenters.push(rooms[i].getCenter());
         }
         this._targetRoom = 0;
+        Game.setPlayerMessages(this._messages);
+        this._imminentStrike = false;
+        this._seenStairCoord = null;
+    },
+    isLevelExplored: function() {
+        return (this._targetRoom === this._roomCenters.length)
+    },
+    descendSpottedStairs: function() {
+        if (!this._seenStairCoord)
+        {
+            Game.queMessage("key "+this._seenStairCoord);
+            return;
+        }
+        else
+        {
+            var coord = this._seenStairCoord + '';
+            var coordParts = coord.split(',');
+            var ents = Map.getEntities();
+            var Path = new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
+                return ents[x + ',' + y]['Floor'];
+            });
+            var steps = [];
+            Path.compute(this.x_coord, this.y_coord, function(x, y) {
+                steps.push([x, y]);
+            });
+
+            if (steps.length > 1)
+            {
+                var nextX = steps[1][0], nextY = steps[1][1];
+                this.move(nextX, nextY);
+            }
+            else
+            {
+                Map.generateMap();
+                
+                Game.queMessage("You descend the stairs");
+            }
+
+        }
+    },
+    setImminentStrike: function(boolean) {
+        this._imminentStrike = boolean;
     },
     processMessages: function() {
         this._messageDisplay.clear();
-        this._messages = this._messages.join("\r\n");
-        this._messageDisplay.drawText(1, 1, this._messages + '', 23)
-        this._messages = []
+        Game._messages = Game._messages.join("\r\n");
+        this._messageDisplay.drawText(1, 1, Game._messages + '', 23)
+        Game._messages = []
     },
     act: function() {
+        this.drawFOV();
         Map.getEngine().lock();
         this._timesMoved = 0;
-        this.drawFOV();
-        this.processMessages();
         window.addEventListener("keydown", this);
+        this._statusDisplay.clear();
+        this._statusDisplay.drawText(1, 1, "Health: " + this._curr_health + "/" + this._max_health, 25);
+        this.processMessages();
         this.drawFOV();
     },
+    canMove: function(direction) {
+        var offset = ROT.DIRS[8][Game.directions[direction]];
+        var newX = offset[0] + this.x_coord, newY = offset[1] + this.y_coord;
+        var target = newX + ',' + newY;
+        console.log("Direction:" + Map.isClear(target, this.checkObstruction || (this._category = 'Enemy')) + ',' + direction);
+        var callback = function() {
+            var boolean = this.checkObstruction();
+            if (this._category)
+            {
+                if (this._category === 'Enemy')
+                    boolean = true
+            }
+            return boolean
+        }
+        return Map.isClear(target, callback);
+    },
     exploreMap: function() {
-//        console.log("currentRoom+amount" + this._targetRoom + ',' + this._roomCenters.length)
-        if (!(this._targetRoom <= this._roomCenters.length))
+        if (!(this._targetRoom < this._roomCenters.length))
         {
 
         }
@@ -261,7 +391,6 @@ Game.Mixins.Actor_Mixins.Player = {
                 return ents[x + ',' + y]['Floor'];
             });
             var steps = [];
-            //console.log("CoordParts" + coordParts)
             Path.compute(this.x_coord, this.y_coord, function(x, y) {
                 steps.push([x, y]);
             });
@@ -274,11 +403,15 @@ Game.Mixins.Actor_Mixins.Player = {
             else
             {
                 this._targetRoom++;
-                console.log(this._targetRoom);
             }
 
         }
 
+    },
+    step: function(direction) {
+        var offset = ROT.DIRS[8][Game.directions[direction]];
+        var newX = offset[0] + this.x_coord, newY = offset[1] + this.y_coord;
+        this.move(newX, newY);
     },
     lookForEnemies: function() {
         var enemies = [];
@@ -311,7 +444,6 @@ Game.Mixins.Actor_Mixins.Player = {
     move: function(targetX, targetY) {
         if (this._timesMoved++ > 0)
         {
-            console.log(this._timesMoved);
             return;
         }
         var ents = Map.entities[this.x_coord + ',' + this.y_coord];
@@ -325,18 +457,19 @@ Game.Mixins.Actor_Mixins.Player = {
                 return;
             }
             delete ents['Player'];
+            this._facingStrike = false;
             this.x_coord = targetX, this.y_coord = targetY;
             targEnts['Player'] = this;
         }
         else if (targEnts['Door'])
         {
-            this._messages.push("The Player opens the Door");
-            targEnts['Door'].open();
+            targEnts['Door'].open(this);
         }
     },
     handleEvent: function(e) {
         var text = $('#inputArea').val();
         eval(text);
+        this._imminentStrike = false;
         window.removeEventListener("keydown", this);
         Map.getEngine().unlock();
     },
@@ -347,11 +480,17 @@ Game.Mixins.Actor_Mixins.Player = {
         this._visible = {};
         this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
             var key = x + ',' + y;
-            var actor = Map.entities[key]['Enemy'];
-            if (actor)
+            var ents = Map.entities[key];
+            if (ents['Enemy'])
             {
+                var actor = ents['Enemy'];
                 actor.setWhetherSeen(true);
                 actor.drawTarget();
+            }
+            else if (ents['Stair'] && (!that._seenStairCoord))
+            {
+                that._seenStairCoord = key;
+                Game.queMessage("There's the Stairs!");
             }
             if (seenLastTurn[key])
                 delete seenLastTurn[key];
@@ -376,7 +515,6 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._HomeY = this.y_coord;
         this._steps = [];
         this._facing = 1;
-        this._state = 'Guarding';
         this._delayer = false;
         this._targetX = null;
         this._targetY = null;
@@ -390,7 +528,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         };
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
     },
-    act: function() {
+    main: function() {
         this._messages = [];
         this._displacements = [];
         var that = this;
@@ -509,7 +647,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         }
         else if (targEnts['Door'])
         {
-            targEnts['Door'].open();
+            targEnts['Door'].open(this);
         }
         this.setDisplacements();
         return this.x_coord === this._targetX && this.y_coord === this._targetY;
@@ -551,27 +689,82 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._whetherSeen = boolean;
     }
 };
+
+Game.Mixins.Actor_Mixins.Minotaur = {
+    name: 'Minotaur',
+    groupName: 'Actor',
+    init: function() {
+        this._clubRaisedAt = false;
+    },
+    act: function() {
+        if (this._offBalance)
+        {
+            this._offBalance = false;
+            Game.queMessage("The " + this._name + " regains its balance.");
+            return;
+        }
+        if (this._clubRaisedAt)
+        {
+            this.strike(Game.getPlayer());
+            return;
+        }
+        this.main();
+    }
+};
+
+Game.Mixins.Actor_Mixins.Orc = {
+    name: 'Orc',
+    groupName: 'Actor',
+    act: function() {
+        this.main();
+    }
+};
+
 Game.Templates.ActorTemplates.PlayerTemplate = {
     category: 'Player',
+    name: 'Player',
     attributes: {
-        _max_health: 50,
-        _curr_health: 50,
+        _max_health: 500,
+        _curr_health: 500,
         _base_attack: 2,
         _base_defense: 1
     },
     mixins: [Game.Mixins.Actor_Mixins.Player,
-        Game.Mixins.Actor_Mixins.Fighter,
+        Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
         Game.Mixins.Actor_Mixins.playerDies]
 };
-Game.Templates.ActorTemplates.EnemyTemplate = {
+Game.Templates.ActorTemplates.OrcTemplate = {
     category: 'Enemy',
+    name: 'Orc',
     attributes: {
         _max_health: 5,
         _curr_health: 5,
-        _base_attack: 2,
+        _base_attack: 5,
         _base_defense: 1
     },
     mixins: [Game.Mixins.Actor_Mixins.Enemy,
-        Game.Mixins.Actor_Mixins.Fighter,
+        Game.Mixins.Actor_Mixins.Orc,
+        Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
         Game.Mixins.Actor_Mixins.enemyDies]
 };
+
+Game.Templates.ActorTemplates.MinotaurTemplate = {
+    category: 'Enemy',
+    name: 'Minotaur',
+    attributes: {
+        _max_health: 25,
+        _curr_health: 25,
+        _base_attack: 20,
+        _base_defense: 1
+    },
+    mixins: [Game.Mixins.Actor_Mixins.Minotaur,
+        Game.Mixins.Actor_Mixins.Enemy,
+        Game.Mixins.Actor_Mixins.clubStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
+        Game.Mixins.Actor_Mixins.enemyDies]
+};
+
+
+

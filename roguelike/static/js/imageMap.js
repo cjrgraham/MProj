@@ -12,14 +12,18 @@ Game.imageMap = {
                 'Concrete_South_Cross': [64, 48], // S facing cross
                 'Concrete_Omni_Cross': [64, 64], //omnidirectional cross
                 'Concrete_North_Cross': [64, 80], // N facing Cross
+                'Stair': [16, 80],
                 'Door': [0, 0],
                 'Open_Door': [48,0],
                 'Player': [32, 0],
-                'Enemy': [32, 0],
+                'Orc': [64, 0],
+                'Minotaur': [80, 0],
                 'Fogged':[0,32],
                 'Target':[48,16],
                 'Chair':[32,16],
                 'Grave':[16,32],
-}
+                'Skull':[48,32],
+                'Bone':[64,32]
+};
 
 

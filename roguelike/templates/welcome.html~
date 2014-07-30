@@ -8,7 +8,7 @@
 
 {% block body_block %}
 
-        <h1>with Myrl</h1>
+        <h1>Welcome to Myrl!</h1>
 {% if user.is_authenticated %}
         Good job
         {% else %}

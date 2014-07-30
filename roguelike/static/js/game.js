@@ -5,7 +5,7 @@ var Game = {
     init: function() {
         tileSet = document.createElement('img');
         tileSet.src =  DJANGO_STATIC_URL+'img/tileset.png';
-        //tileSet.src =  'tileset.png';
+       //tileSet.src = 'tileset.png';
         var options = {
             layout: 'tile',
             bg: 'transparent',
@@ -15,10 +15,23 @@ var Game = {
             tileMap: Game.imageMap
         };
         this._display = new ROT.Display(options);
-        this._textDisplay = new ROT.Display({width: 25, height:70});
+        this._textDisplay = new ROT.Display({width: 25, height: 70});
+        this._statDisplay = new ROT.Display({width: 25, height: 10});
     },
     getTextDisplay: function() {
         return this._textDisplay;
+    },
+    getStatDisplay: function() {
+        return this._statDisplay;
+    },
+    clearDisplay: function() {
+        for (x = 0; x <= this._screenWidth; x++)
+        {
+            for (y = 0; y <= this._screenHeight; y++)
+            {
+                this._display.draw(x, y, null, '#EEEEEE', '#EEEEEE')
+            }
+        }
     },
     getDisplay: function() {
         return this._display;
@@ -34,5 +47,11 @@ var Game = {
     },
     getPlayer: function() {
         return this._player;
+    },
+    setPlayerMessages: function(messages){
+        this._messages=messages;
+    },
+    queMessage: function(message){
+        this._messages.push(message);
     }
 };

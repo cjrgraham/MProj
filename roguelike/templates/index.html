@@ -18,14 +18,19 @@ pre {white-space: pre;}
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/rot.min.js' %}"></script>
     <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-<script src="{% static 'js/game.js' %}"></script>
-<script src="{% static 'js/Map.js' %}"></script>
-<script src="{% static 'js/Offsets.js' %}"></script>
-<script src="{% static 'js/imageMap.js' %}"></script>
-<script src="{% static 'js/tiles.js' %}"></script>
-<script src="{% static 'js/element.js' %}"></script>
-<script src="{% static 'js/entity.js' %}"></script>
-<script src="{% static 'js/keys.js' %}"></script>
+    <script src="{% static 'js/dragscrollable.js' %}"></script>
+        <script src="{% static 'js/game.js' %}"></script>
+        <script src="{% static 'js/element.js' %}"></script>
+        <script src="{% static 'js/entity.js' %}"></script>
+        <script src="{% static 'js/Room.js' %}"></script>
+        <script src="{% static 'js/tiles.js' %}"></script>
+        <script src="{% static 'js/Rooms.js' %}"></script>
+        <script src="{% static 'js/Levels.js' %}"></script>
+        <script src="{% static 'js/Map.js' %}"></script>
+        <script src="{% static 'js/Offsets.js' %}"></script>
+        <script src="{% static 'js/directions.js' %}"></script>
+        <script src="{% static 'js/imageMap.js' %}"></script>
+        <script src="{% static 'js/keys.js' %}"></script>
 {% endblock %}
 
 {% block body_block %}
@@ -45,9 +50,12 @@ pre {white-space: pre;}
 		<h3>Messages</h>
                   <div id="messages"  overflow="auto">
 </div>
+<h3>Status</h>
+                            <div id="status"  overflow="auto">
+                            </div>
           </div><!--/.well -->
         </div><!--/span-->
-       <div class="span9">
+       <div class="span9" style=" overflow: hidden; width: 70%; height: 20%;">
 
           
       <div class="hero-unit" id="gameArea" min-width="1280">
@@ -69,49 +77,46 @@ pre {white-space: pre;}
 
 </div>
                                       <textarea rows="15" style="width:90%" id ="inputArea">
-var enemies = this.lookForEnemies();
-if(enemies.length>0)
-{
-var firstEnemy = enemies[0];
-this.attackEnemy(firstEnemy);
-}
-else
-{
-this.exploreMap();
-}                 
+{{ theCode }}            
                         </textarea> 
           </div>
 
 <div class="row-fluid">
-<h1>Code Blocks</h1><h3>(Mouse over for info):</h3>
+<h1>Code Blocks</h1><h3>(Mouse over for code info):</h3>
 </div>
-</br>
-<div class="row-fluid">
-<h2>"If" Statements - </h2>
-</div>
-</br>
-<div class="row-fluid">
+
+<div id="accordion">
+<h3>"If" Statements</h3>
+<div>
+
           <div class="row-fluid">
             <div class="span4">
               <h3>Look for Enemy</h3>
             
 <pre title="-------------------------
+
+
 What it does: 
+
 -------------------------
 The first line will make you ('this') look for enemies and 
 record them in the variable 'enemies'. Then in the second line we check 
 whether we've seen an enemy - if 'enemies' is greater than
 ('>') 0. If it is, the code bewteen the braces is executed.
 Otherwise, we bypass the braced code. For your
+
 convenience, in the line after the first brace I've recorded
+
 the first enemy seen ('enemies[0]') in the variable 
 'firstEnemy'.
+
 -------------------------
 How to Use it:
 -------------------------
 Use it to check if you can see an enemy! If you do, you should
 probably attack him. To do so, put a second line inside the
 braces where you use the 'attack' instruction to attack the 
+
 selected 'firstEnemy'. 
 ">
 var enemies = this.lookForEnemies();
@@ -122,16 +127,137 @@ var firstEnemy = enemies[0];
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
+<div class="span4">
+
+              <h3>Check if Level is Explored</h3>
+
+            
+
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line of this command makes you ('this') check if you've
+explored all rooms in the current level. If so, the code inside the
+braces is executed; otherwise, it is bypassed
+
+-------------------------
+How to Use it:
+
+-------------------------
+
+Use it to check if you've seen all you can see in the current level.
+You don't want to leave a level prematurely, as it may contain items
+you need later. Put the code you want executed once you've finished
+exploring the current level inside the braces.
+">
+if(this.isLevelExplored())
+{
+
+}
+
+</pre>
+
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+<div class="span4">
+              <h3>Check if direction is free</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line of this command makes you ('this') check if the place
+adjacent to you in the specified direction (From the constants N,NW,
+NE,S,SW,SE,W,E in Game.directions) is free and can be moved to
+
+-------------------------
+How to Use it:
+-------------------------
+
+This is best used in conjunction with the main step action. Can be usefull
+for dodjing attacks. Also, you can cycle through the keys in Game.directions
+using a for loop. Check the guide to see how to do this. This way, you can
+check if any adjacent square is free in a few lines of code.
+">if (this.canMove(/*Put direction here*/))
+{
+
+}
+
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
           </div><!--/row-->
-</br>
 <div class="row-fluid">
-<h2>Main Actions - </h2>
+            <div class="span4">
+
+              <h3>Look out for strike</h3>
+
+            
+
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line will make you ('this') check if your're about
+to be hit with a heavy strike. If so, the code within the braces
+is exececuted; otherwise, the code inside the braces is bypassed.
+
+-------------------------
+How to Use it:
+-------------------------
+
+If you use this, its a good idea to put dodging instructions inside
+the braces. If you're about to be hut, but you move places, the 
+enemy will miss you.
+">
+var enemies = this.lookForEnemies();
+
+if(enemies.length>0)
+
+{
+
+var firstEnemy = enemies[0];
+}
+</pre>
+
+              <a class="btn" href="#">Paste me! </a>
+
+            </div><!--/span-->
+</div><!--/row-->
 </div>
-</br>
+<h3>Main Actions</h3>
+<div>
           <div class="row-fluid">
+            <div class="span4">
+
+              <h3>Step in Direction</h3>
+
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+This statement will make you ('this.') step in a direction
+(From the constants N,NW,NE,S,SW,SE,W,E in Game.directions)
+which is placed in between the brackets and surrounded by quotes,
+e.g. 'N'.
+
+-------------------------
+How to Use it:
+-------------------------
+
+Use it to step in a particular direction. You probably want to make
+sure you can do so first, though.
+">
+this.step(/*Direction Goes Here*/)
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
             <div class="span4">
               <h3>Explore Level</h3>
             
+
 <pre title="-------------------------
 What it does: 
 -------------------------
@@ -139,6 +265,7 @@ This statement will make you ('this.') explore the Map by
 moving towards the center of the next unexplored room, if there
 is one. If this statement is executed and you have explored all
 rooms, you will waste your turn.
+
 -------------------------
 How to Use it:
 -------------------------
@@ -164,13 +291,15 @@ turn!
 -------------------------
 How to Use it:
 -------------------------
+
 Use it to, well, attack an enemy!
 ">
-this.attackEnemy();
+this.attackEnemy(/*Enemy goes here*/);
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
           </div><!--/row-->
+</div>
 </div>
 </br>
 </div>
@@ -180,8 +309,7 @@ by index).
 </div>
 </div>
 
-
-
+</div>
 
 <!--adapted slightly from http://jsfiddle.net/NaHTw/4/-->
 <script>
@@ -197,7 +325,19 @@ $(function() {
 });
 
 </script>
-
+<script>
+$(function() {
+$('#inputArea').change(function(){
+    var theCode = $(this).val();
+    $.get('/save_code/', {code: theCode});
+});
+});
+</script>
+<script>
+ $(function() {
+$( "#accordion" ).accordion({heightStyle: "content"});
+});
+</script>
 <script>
 $( "#tabs" ).tabs();
 </script>
