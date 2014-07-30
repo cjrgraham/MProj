@@ -55,7 +55,7 @@ pre {white-space: pre;}
                             </div>
           </div><!--/.well -->
         </div><!--/span-->
-       <div class="span9" style=" overflow: hidden; width: 70%; height: 20%;">
+       <div class="span9; viewport" id="scrollArea" style=" overflow: hidden; ">
 
           
       <div class="hero-unit" id="gameArea" min-width="1280">
@@ -179,7 +179,7 @@ This is best used in conjunction with the main step action. Can be usefull
 for dodjing attacks. Also, you can cycle through the keys in Game.directions
 using a for loop. Check the guide to see how to do this. This way, you can
 check if any adjacent square is free in a few lines of code.
-"> if (this.canMove(/*Put direction here*/))
+">if (this.canMove(/*Put direction here*/))
 {
 
 }

@@ -285,8 +285,9 @@ var Map = {
 window.onload = function() {
     Game.init();
     var playField = Game.getDisplay().getContainer()
-    $('#gameArea').append(playField).dragscrollable();
+    $('#gameArea').append(playField);
     //
+    $('#gameArea').dragscrollable();
     $('#gameArea').slimScroll({width: '95%',
         height: '20%'})
     //

@@ -285,11 +285,10 @@ var Map = {
 window.onload = function() {
     Game.init();
     var playField = Game.getDisplay().getContainer()
-    $('#gameArea').append(playField).dragscrollable();
+    $('#gameArea').append(playField);
     //
-    //$('#gameArea').slimScroll({width: '95%',
-    //    height: '20%'})
-    //
+    $('#gameArea').dragscrollable();
+
     var messageField = Game.getTextDisplay().getContainer()
     $('#messages').append(messageField);
     $('#messages').slimScroll({
