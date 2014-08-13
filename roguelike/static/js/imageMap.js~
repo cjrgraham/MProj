@@ -42,8 +42,7 @@ Game.imageMap = {
                 'Broken Pot':[64,96],
                 'Grass': [32,112],
                 'Pebbles': [80,112],
-                'Orc Warrior':[96,80],
-		'Treasure':[80,80]
+                'Orc Warrior':[96,80]
 };
 
 

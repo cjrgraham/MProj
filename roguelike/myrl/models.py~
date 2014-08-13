@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    code = models.CharField(max_length=100000, default='// Checks if we've been to all rooms; If so, leave level.
-if(this.isLevelExplored())
+    code = models.CharField(max_length=100000, default="""//this.raiseShield();
+// Checks if we've been to all rooms; If so, leave level.
+//if(this.isLevelExplored())
 {
 this.descendSpottedStairs();
 }
@@ -24,16 +25,23 @@ this.descendSpottedStairs();
             }
         }
 //Checks for enemies and attacks first one seen; otherwise explores.
-var enemies = this.lookForEnemies();
+var enemies = this.lookForItem();
 if(enemies.length>0)
 {
 var firstEnemy = enemies[0];
-this.attackEnemy(firstEnemy);
+var a = this.goTo(firstEnemy);
+if (a)
+{
+Game.queMessage("here");
+ this.pickUp();
+}
 }
 else
 {
 this.exploreMap();
-}  ')
+}              
+if(this._curr_health<450)
+this.drinkPotion();   """)
     def __unicode__(self):
         return unicode(self.user)
 

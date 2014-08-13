@@ -160,13 +160,6 @@ Game.Mixins.Room_Mixins.hasBrokenPot = {
     }
 }
 
-Game.Mixins.Room_Mixins.hasTreasure = {
-    name: 'hasTreasure',
-    init: function() {
-        placeEntity(this, Game.Templates.Item_Templates.treasure);
-    }
-}
-
 Game.Mixins.Room_Mixins.hasGrass = {
     name: 'hasGrass',
     init: function() {
@@ -284,10 +277,6 @@ Game.Templates.RoomTemplates.DogRoom = {
 
 Game.Templates.RoomTemplates.MinotaurRoom = {
     mixins: [Game.Mixins.Room_Mixins.hasMinotaur]
-};
-
-Game.Templates.RoomTemplates.Treasure = {
-    mixins: [Game.Mixins.Room_Mixins.hasTreasure]
 };
 
 Game.Templates.RoomTemplates.StairRoom = {

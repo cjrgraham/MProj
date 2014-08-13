@@ -4,13 +4,11 @@ var Map = {
     _player:null,
     _level: 0,
     generateMap: function() {
-        //1405130628830
-        //1405172077329
-        // ROT.RNG.setSeed(1405130628830);
+        //ROT.RNG.setSeed(1407692687798);
         this.entities = {};
         this._scheduler = (new ROT.Scheduler.Simple());
         this._engine = new ROT.Engine(this._scheduler);
-        this._grid = digger = new ROT.Map.Digger();
+        this._grid = new ROT.Map.Digger();
         var oDirs = ['N', 'NW', 'W', 'SW'];
         var thsDirs = ['S', 'SE', 'E', 'NE'];
         var offset = [[0, -1], [-1, -1], [-1, 0], [-1, 1]];
@@ -30,7 +28,7 @@ var Map = {
 
         };
 
-        digger.create(digCallback);
+        this._grid.create(digCallback);
 
         var setDoor = function(x, y) {
             new Game.Entity({template: Game.Templates.DoorTemplates.Door, x_coord: x, y_coord: y});
@@ -205,6 +203,9 @@ var Map = {
     addToSchedule: function(actor) {
         this._scheduler.add(actor, true);
     },
+        clearSchedule: function(actor) {
+        this._scheduler.clear();
+    },
     takeFromSchedule: function(actor) {
         this._scheduler.remove(actor);
     },
@@ -258,20 +259,26 @@ var Map = {
         var x = rooms[0].getLeft(), y = rooms[0].getTop();
         var level = Game.Levels[this._level++];
         for (var i = 1; i < rooms.length-1; i++) {
-            var roomTemplate = level[Math.floor(Math.random() * level.length)];
-            new Game.Room({Room: rooms[i], template: roomTemplate});
+            new Game.Room({Room: rooms[i], template: level[Math.floor(Math.random() * level.length)]});
         }
+        if(level===Game.Levels.length)
+        {
+                    new Game.Room({Room: rooms[rooms.length-1], template: 
+                Game.Templates.RoomTemplates.Treasure});
+        }
+        else
+        {
         new Game.Room({Room: rooms[rooms.length-1], template: 
                 Game.Templates.RoomTemplates.StairRoom});
+        }
         if (this._player)
-            Game.Templates.ActorTemplates.PlayerTemplate['attributes']=
-               {
-        _name:"Player",
-        _max_health: this._player._max_health,
-        _curr_health: this._player._curr_health,
-        _base_attack: this._player._base_attack,
-        _base_defense: this._player._base_defense
-    };
+        {
+            this._player.x_coord=x;
+            this._player.y_coord=y;
+            this.entities[x+","+y]["Player"]= this._player;
+            this._player.setUpForFloor();
+        }
+        else
         this._player= new Game.Entity({template: Game.Templates.ActorTemplates.PlayerTemplate,
             x_coord: x, y_coord: y});
 
@@ -288,7 +295,9 @@ window.onload = function() {
     $('#gameArea').append(playField);
     //
     $('#gameArea').dragscrollable();
-
+    $('#gameArea').slimScroll({width: '95%',
+        height: '20%'})
+    //
     var messageField = Game.getTextDisplay().getContainer()
     $('#messages').append(messageField);
     $('#messages').slimScroll({
@@ -300,7 +309,7 @@ window.onload = function() {
     Map.generateMap();
 
     Map.getEngine().start();
-//    console.log(ROT.RNG.getSeed());
+    console.log(ROT.RNG.getSeed());
 }
 
 

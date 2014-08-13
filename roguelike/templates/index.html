@@ -94,30 +94,29 @@ pre {white-space: pre;}
               <h3>Look for Enemy</h3>
             
 <pre title="-------------------------
-
-
 What it does: 
-
 -------------------------
+
 The first line will make you ('this') look for enemies and 
 record them in the variable 'enemies'. Then in the second line we check 
-whether we've seen an enemy - if 'enemies' is greater than
+whether we've seen an enemy - if 'enemies' is longer than
 ('>') 0. If it is, the code bewteen the braces is executed.
-Otherwise, we bypass the braced code. For your
+Otherwise, we bypass the braced code. If you only want to look for a 
+particular type of enemy, you can specify it by name between the brackets in 
+'this.lookForEnemies()'. But the spelling and case has to match exactly,
+and the name has to be enclosed in speech (') marks.
 
-convenience, in the line after the first brace I've recorded
-
-the first enemy seen ('enemies[0]') in the variable 
-'firstEnemy'.
+For your convenience, in the line after the first brace I've recorded
+the first enemy seen ('enemies[0]') in the variable 'firstEnemy'.
 
 -------------------------
 How to Use it:
 -------------------------
 Use it to check if you can see an enemy! If you do, you should
 probably attack him. To do so, put a second line inside the
-braces where you use the 'attack' instruction to attack the 
-
-selected 'firstEnemy'. 
+braces where you use the 'goTo' instruction to advance on the 
+selected 'firstEnemy'. Or for a ranged attack, use the 'shootArrowAt'
+auxiliary action.
 ">
 var enemies = this.lookForEnemies();
 if(enemies.length>0)
@@ -189,6 +188,45 @@ check if any adjacent square is free in a few lines of code.
             </div><!--/span-->
           </div><!--/row-->
 <div class="row-fluid">
+           <div class="span4">
+              <h3>Look for Item</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line will make you ('this') look for items and 
+record them in the variable 'items'. Then in the second line we check 
+whether we've seen an item - if 'items' is longer than
+('>') 0. If it is, the code bewteen the braces is executed.
+Otherwise, we bypass the braced code. If you only want to look for a 
+particular type of item, you can specify it by name between the brackets in 
+'this.lookForItem()'. But the spelling and case has to match exactly,
+and the name has to be enclosed in speech (') marks.
+
+For your convenience, in the line after the first brace I've recorded
+the first enemy seen ('items[0]') in the variable 'firstItem'.
+
+-------------------------
+How to Use it:
+-------------------------
+Use it to check if you can see an item! If you do, you should
+probably go to it and pick it up. To do so, put a second line inside the
+braces where you use the 'goTo' instruction to go to the selected 'firstItem'.
+You can check wether you have reached the item by checking the return value of
+'goTo' is true, in which case you should attempt to pick the item up.
+
+PS - Items you've already tried to pick up will be ignored by this code.
+">
+var items = this.lookForItem();
+if(items.length>0)
+{
+var firstItem = items[0];
+}
+
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
             <div class="span4">
 
               <h3>Look out for strike</h3>
@@ -211,13 +249,11 @@ If you use this, its a good idea to put dodging instructions inside
 the braces. If you're about to be hut, but you move places, the 
 enemy will miss you.
 ">
-var enemies = this.lookForEnemies();
+var strikeCheck = this.watchForStrike();
 
-if(enemies.length>0)
-
+if(strikeCheck)
 {
 
-var firstEnemy = enemies[0];
 }
 </pre>
 
@@ -277,35 +313,271 @@ this.exploreMap();
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
             <div class="span4">
-              <h3>Attack Enemy</h3>
+              <h3>Go To Something</h3>
             
 <pre title="-------------------------
 What it does: 
 -------------------------
-This statement will make you ('this.') attack the enemy to which
-you refer in between the braces in this statement. Once you attack,
-your turn is over.
+This statement will make you ('this.') move to an object (item or enemy)
+you refer in between the braces in this statement. If you arrive at your
+destination, the variable 'arrived' will be assigned  to be true.
 
-Make sue to specify the enemy you want to attack, or you'll waste a 
-turn!
 -------------------------
 How to Use it:
 -------------------------
 
-Use it to, well, attack an enemy!
+Get a reference to an item or object by looking for them and assigning them
+to a variable using a var statement, then place that variable between the
+braces in the code. You wil then step towards it - if it is an enemy, you
+will eventually bump into and attack it. If is an item, you can check whether
+you are on top of it by checking if 'arrived' is true, in which case you can
+try to pick it up.
 ">
-this.attackEnemy(/*Enemy goes here*/);
+var arrived = this.goTo();
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+          </div><!--/row-->
+<div class="row-fluid">
+            <div class="span4">
+              <h3>Raise Shield</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+This statement will make you ('this') raise your shield, weakening 
+incoming strikes, or bounce arrows back if you have a mithril shield.
+
+-------------------------
+How to Use it:
+-------------------------
+
+Usefull to use if archers are shooting at you and you have a mithril
+shield.
+">
+this.raiseShield();
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+           <div class="span4">
+              <h3>Descend Spotted Stairs</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The is code will make you ('this') go to the last set of stairs you
+seen and descend them once reached.
+
+-------------------------
+How to Use it:
+-------------------------
+
+Use it to go to the next level when you are ready.
+">
+this.descendSpottedStairs();
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
           </div><!--/row-->
 </div>
+<h3>Auxiliary Actions</h3>
+<div>
+
+          <div class="row-fluid">
+            <div class="span4">
+              <h3>Pick up item</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+This code will make you ('this') pick up an item you are standing
+on. In the case where the item is worse than what you're already
+carrying, it does nothing.
+
+-------------------------
+How to Use it:
+-------------------------
+Use it to pick up items! They can be quite useful..
+
+Of course, you need to check if you are standing over an item first.
+">
+this.pickUp();
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+<div class="span4">
+
+              <h3>Shoot Arrow</h3>
+
+            
+
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line of this command makes you ('this') shoot an arrow at
+an enemy specified by a variable between the brackets in the code.
+
+-------------------------
+How to Use it:
+-------------------------
+
+Use it to shoot an enemy from far away, and multiple times in the one turn!
+Of course, you need arrows for this.
+">
+this.shootArrowAt();
+</pre>
+
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+<div class="span4">
+              <h3>Drink Potion</h3>
+            
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line of this command makes you ('this') drink a potion,
+healing 30 of your health points
+
+-------------------------
+How to Use it:
+-------------------------
+
+Its a good idea to drink some potions when your health dips too low.
+Remember, you can do this multiple times in one turn!
+">this.drinkPotion();
+</pre>
+              <a class="btn" href="#">Paste me! </a>
+            </div><!--/span-->
+          </div><!--/row-->
+
+</div>
 </div>
 </br>
 </div>
 <div id="tabs-3">
-The manual will go here. Will explain the game and elementary programming stuff (if statements; logical operators; for loops; array accessing
-by index).
+<h1>Game Guide</h1>
+contents go here
+<h3>Introduction</h3>
+Welcome to JSRogue! This is a roguelike game where your objective is to descend to the bottom of the dungeon and steal a chest of treasure. 
+Many enemies will try to cut your quest short, but fortunately the dungeon is scattered with items you can use to help you on your way. 
+<br><br>
+The unique aspect of JSRogue is that you don't control your character by pressing keys or clicking the mouse - you write javascript code which
+then controls your character! Hopefully the game serves as a fun way for you to learn some javascript and fundamental programming concepts. Before playing the game, you should read the rest of this guide so you can start writing some code.
+
+<h3>Game Basics</h3>
+Playing the game involves writing code in the Text-Area of the code section under the 'Code' tab. Then go the the 'Game' tab and press a button. If you wrote correct code for making your character perform some action it should be performed. To help you start writing code I've provided some pre-made code snippets in the section underneath the text area in the 'Code' tab. To use them simply click on the part of the text area where you want the pre-written code placed, then press the 'paste me' button underneath the code snippet you want to use a that point. You should also mouse over the code snippets to read a detailed description of what they do.
+
+<h3>Coding Basics</h3>
+
+JSRogue is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
+code you've entered into the text area will be executed, starting from the top and ending at the bottom.
+<br><br>
+But how do you write this code? As a simple example, consider the following code-snippet which maker your character move one step north:
+<br><br>
+<pre>this.step('N')</pre>
+<br>
+What exactly is going on here? First of all, we begin by referring to the player character by using the keyword <b>'this'</b>. Now, the player
+character is a JavaScript object, and has both a selection of <b>attributes</b> we can access, examine and modify, and <b>methods</b> we can use to perform some action. You can think of attributes as properties of an object, such as its height or weight, and methods as actions associated with the object. The way we access an object's properties and methods is by referring to the object (in this case using the 'this'
+keyword), then placing a full-stop after this reference (so we now have 'this.') and then referring to the property or the method we want to 
+access after the full stop (which gets us 'this.step'). At this stage we now have a reference to the 'step' method of the player character object, but that isn't sufficient to actually step somewhere. We don't want to simply refer to this method - we want to use it! To do so, we
+must place a pair of brackets after our reference to the method, which gets us 'this.step()'. With some methods this is all we need to do; however, we cannot simply step - we must step in a direction. This method, like many others, requires us to supply a <b>parameter</b> between the braces, in this case a direction. The method is such that it recognises 'N' as north, so we place it between the braces, remembering to keep the speech marks and case, finally getting us 'this.step('N')', the code we started with. This pattern is central to the code you will write to control your character.
+
+
+<h3>Return values</h3>
+
+Consider the following code snippet:
+<br><br>
+<pre>var strikeCheck = this.watchForStrike()</pre>
+<br>
+By now it should be clear what is going on to the right of the '=' sign in the code above: we are executing the 'watchForStrike' method of 'this'. It might also be apparent what 'watchForStrike' does: it checks if the player character is currently facing an incoming strike. But what's happening to the left of the '=' sign. What we're doing is assigning the <b>return value</b> of the execution of the watchForStrike
+method to the variable 'strikeCheck'. If the player is about to be hit, strikeCheck will hold the value true, otherwise it will hold the value
+false. We can then use this variable in the rest of our code.
+
+Note: the name of the vaiable is arbritrary, and you can use whater you find convenient.
+
+<h3>'If' Statements</h3>
+
+One such use of a return value stored in a variable is to decide what portion of the rest of our code should be executed. In Javascript, just as in many other programming langauges such as C, we can do this by means of an 'If' statement. This is illustrated in the following example:
+<br><br>
+<pre>var strikeCheck = this.watchForStrike()
+if (strikeCheck)
+{
+
+}
+</pre>
+As before we store the return value of the call of watchForStrike in strikeCheck. But this time we actually use the variable for something - to check if we should execute some other instructions between the curly braces. We do this by placing the variable to be evaluated as true or false in the brackets after the 'if'. No intstructions are present in this example between the curly brackets, but if we, for instance, placed
+'this.step('N')' between the braces, this line would be executed if the value of strikeCheck was true: that is, if the player was about to be struck. Multiple lines can be placed between the braces, and any code below the braces is executed after that inside the braces is. Otherwise, if strikeCheck is false, the code between the braces is skipped and the code after the braces, if present, is executed.
+<br>
+<h3>Arrays</h3>
+Some method calls return a special typr of object: <b>arrays</b>. Any array is a container object which keeps other objects in a certain order. Consider the following example:
+ <br><br>
+<pre>var enemies = this.lookForEnemies();
+if(enemies.length>0)
+{
+var firstEnemy = enemies[0]
+}
+</pre>
+<br>
+In this first line we call the method lookForEnemies, which returns an array containing references to all the enemies, which we store in the variable 'enemies'. All arrays have a length attribute, so we can check if we've seen an enemy by checking if the length of the array stored in 'enemies' is greater than 0, which is what we do between the brackets after the 'if'. If that is true, then, as pointed out above, the code between the curly brackets will be executed. In that case we will likely want to do something to one of the enemies we seen, so we get a reference to the first enemy seen and store it in 'firstEnemy'. We do this by accessing the first object in enemies, which we do by placing square brackets after the 'enemies' variable, enclosing the position of its first element. Positions are counted from 0, so to get the first element we put 0 between the square brackets.
+
+Though it is not included in the example, at that point we could use the variable 'firstEnemy' to do something to the first enemy we seen. We could pass it as a parameter to a method which makes the player character step towards the enemy, or shoot an arrow at it, for instance.
+<br>
+<h3>The 'Directions' array</h3>
+A premade array is provided for you to use in the form of the 'Directions' object, referred to as Game.directions. This is best used with repeatedely performing an action which takes a direction as input, but where you don't want to repeat the code with different direction parameters. The example in the next section illustrates this.
+<br>
+<h3>For Loops</h3>
+We might want to check what spaces next to us are free, so that, e.g., we can move there (to dodge an enemy attack, for instance). We could do this by putting 'this.canMove('N')', 'this.canMove('S')' etc. on seperate lines. But this is very clumsy. It is better to use the following idiom:
+ <br><br>
+<pre>for (direction in Game.directions)
+{
+if (this.canMove(direction))
+ {
+
+ }
+}
+</pre>
+The purpose of the outer 'for' statement followed by brackets and outer curly braces is to execute the code enclosed by the outer curly brackets repeatedely with a different direction value assigned to the variable 'direction' from the Game.directions array each time. This is done as many times as there are directions in Game.directions. To illustrate how to use the 'direction' variable, I have placed some inner code which checks if we can movde in the currently selected direction from Game.directions. You could place some code in the inner curly brackets which would be executed if that direction was free to move in. After the code has been executed with every different direction value in the Game.directions array, the rest of the code below is executed.
+<br><br>
+Note: The use of the variable name 'direction' is arbritrary - we could just as well have written 'for (blah in Game.directions)' instead, and use 'blah' as a variable.
+<br>
+<h3>Method List</h3>
+<br>
+Note: You can can only perform one of the following actions a turn: moving, physically attacking an enemy, raising your shield. Firing arrows, quaffing potions, looking for enemies and so on can be performed as many times as you wish.
+<br><br>
+<h5>this.isLevelExplored()</h5>
+Function: This returns true if you have used the exploreLevel method to explore every room in the level; false otherwise.
+<br><br>
+Parameters: None.
+<br><br>
+<h5>this.shootArrowAt()</h5>
+Function: This shoots an arrow at an enemy supplied as a parameter.
+<br><br>
+Parameters: The enemy to be shot. 
+<br><br>
+<h5>this.descendSpottedStairs()</h5>
+Function: This will move you towards a set of stairs you've seen, an descend them once you're standing on them.
+<br><br>
+Parameters: None.
+<br><br>
+<h5>this.watchForStrike()</h5>
+Function: This returns true if a minotaur is about to strike you with his club; false otherwise.
+<br><br>
+Parameters: None.
+<br><br>
+<h5>this.raiseShield()</h5>
+Function: This raises your shield to reduce the damage you take from incoming attacks for the next turn. If you have a mithril shield, you will also deflect arrows back at the enemy who shot them.
+<br><br>
+Parameters: None.
+<br><br>
+<h5>this.canMove()</h5>
+Function: This checks if you can move in the direction passed as parameter next turn.
+<br><br>
+Parameters: A direction taken from the Game.directions object, or supplied directly as one of: 'N','NE','E','SE','S','SW','W','NW'. Remember to use the speech marks if supplying the direction directly.
+<br><br>
 </div>
 </div>
 

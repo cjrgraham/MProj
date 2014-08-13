@@ -1,4 +1,21 @@
 Game.Mixins = {};
+Game.Mixins.General_Mixins = {};
+
+Game.Mixins.General_Mixins.blocksSight = {
+    name: 'blocksSight',
+    groupName: 'General',
+    init: function() {
+        this._opacity = true;
+    }
+}
+
+Game.Mixins.General_Mixins.obstructs = {
+    name: 'obstructs',
+    groupName: 'General',
+    init: function() {
+        this._obstructs = true;
+    }
+}
 
 Game.Mixins.Tile_Mixins = {};
 Game.Mixins.Tile_Mixins.Tile = {
@@ -9,8 +26,10 @@ Game.Mixins.Tile_Mixins.Tile = {
     },
     getType: function() {
         return this._kind;
-    }
+    },
 }
+
+
 
 Game.Mixins.Tile_Mixins.FloorTile = {
     name: 'Floor_Tile',
@@ -25,8 +44,6 @@ Game.Mixins.Tile_Mixins.WallTile = {
     groupName: 'Tile',
     init: function() {
         this._connections = {};
-        this._obstructs = true;
-        this._opacity = true;
     },
     doesContainNumber: function() {
         var count = 0;
@@ -117,7 +134,8 @@ Game.Mixins.Tile_Mixins.WallTile = {
 Game.Templates = {};
 Game.Templates.TileTemplates = {};
 Game.Templates.TileTemplates.WallTile = {
-    mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.WallTile],
+    mixins: [Game.Mixins.Tile_Mixins.Tile, Game.Mixins.Tile_Mixins.WallTile,
+        Game.Mixins.General_Mixins.blocksSight, Game.Mixins.General_Mixins.obstructs],
     category: 'Wall',
     name: 'Wall'
 };
@@ -130,30 +148,63 @@ Game.Templates.TargetTemplates.Target = {
     category: 'Target',
     name: 'Target'
 };
-
 Game.Mixins.Stair_Mixins = {};
 Game.Mixins.Stair_MixinsStair = {
     name: 'Stair_Tile',
     groupName: 'Stair',
 };
-
 Game.Templates.StairTemplates = {};
 Game.Templates.StairTemplates.Stair = {
     category: 'Stair',
-    name: 'Stair'
+    name: 'Stair',
 };
-
 Game.Templates.DecorationTemplates = {};
 Game.Templates.DecorationTemplates.SkullTile = {
     category: 'Decoration',
     name: 'Skull'
 };
-
 Game.Templates.DecorationTemplates.BoneTile = {
     category: 'Decoration',
-    name: 'Bone'
+    name: 'Bone',
 };
 
+Game.Templates.DecorationTemplates.shelf1 = {
+    category: 'Decoration',
+    name: 'Shelf1',
+    mixins: [Game.Mixins.General_Mixins.blocksSight, Game.Mixins.General_Mixins.obstructs]
+
+};
+Game.Templates.DecorationTemplates.shelf2 = {
+    category: 'Decoration',
+    name: 'Shelf2',
+    mixins: [Game.Mixins.General_Mixins.blocksSight, Game.Mixins.General_Mixins.obstructs]
+
+};
+Game.Templates.DecorationTemplates.bookShelf = {
+    category: 'Decoration',
+    name: 'Book Shelf',
+    mixins: [Game.Mixins.General_Mixins.blocksSight, Game.Mixins.General_Mixins.obstructs]
+
+};
+
+Game.Templates.DecorationTemplates.pebbles = {
+    category: 'Decoration',
+    name: 'Pebbles'
+};
+
+Game.Templates.DecorationTemplates.grass = {
+    category: 'Decoration',
+    name: 'Grass'
+};
+
+Game.Templates.DecorationTemplates.pot = {
+    category: 'Decoration',
+    name: 'Pot'
+};
+Game.Templates.DecorationTemplates.brokenPot = {
+    category: 'Decoration',
+    name: 'Broken Pot'
+};
 Game.Mixins.Door_Mixins = {};
 Game.Mixins.Door_Mixins.Door = {
     name: 'Door_Tile',
@@ -182,15 +233,60 @@ Game.Templates.CorpseTemplates.Corpse = {
 };
 Game.Mixins.Actor_Mixins = {};
 Game.Templates.ActorTemplates = {};
-
 Game.Mixins.Actor_Mixins.normalStrike = {
     name: 'normalStrike',
     groupName: 'Actor',
     strike: function(targetObj) {
         var att = this._base_attack;
+        if (this["_Sword"])
+        {
+            att += parseInt(this["_Sword"]["_Bonus"])
+        }
         Game.queMessage("The " + this._name +
                 " hits the" + " " + targetObj._name + ".");
+        if (targetObj._category === 'Enemy') {
+           targetObj._targetX=this.x_coord; 
+           targetObj._targetY=this.y_coord;
+           targetObj.turnToTarget(targetObj);
+           targetObj.drawTarget();
+        }
         targetObj.isStruck(att, this);
+    }
+},
+Game.Mixins.Actor_Mixins.arrowStrike = {
+    name: 'arrowStrike',
+    groupName: 'Actor',
+    arrowStrike: function(targetObj) {
+        var att = this._arrow_attack;
+        if (targetObj["_Shield"])
+        {
+            if (targetObj["_Shield"]["_name"] === "Mithril Shield" &&
+                    targetObj._shieldRaised)
+            {
+                Game.queMessage("The " + this._name +
+                        " shoots an arrow but is wounded when the " + targetObj._name + "'s shield deflects it back!");
+                this.isStruck(att, this);
+                return;
+            }
+        }
+        if (this["_Bow"])
+        {
+            att += this["_Bow"]["_Bonus"]
+        }
+        Game.queMessage("The " + this._name +
+                " shoots an arrow and wounds the " + " " + targetObj._name + ".");
+        if (targetObj._category === 'Enemy') {
+            targetObj.turnToTarget(this.x_coord + ',' + this.y_coord);
+            targetObj.drawTarget();
+        }
+                if (targetObj._category === 'Enemy') {
+           targetObj._targetX=this.x_coord; 
+           targetObj._targetY=this.y_coord;
+           targetObj.turnToTarget(targetObj);
+           targetObj.drawTarget();
+        }
+        targetObj.isStruck(att, this);
+        this._Arrows--;
     }
 }
 
@@ -199,19 +295,16 @@ Game.Mixins.Actor_Mixins.clubStrike = {
     groupName: 'Actor',
     strike: function(targetObj) {
         var att = this._base_attack;
-
         if (!this._clubRaisedAt)
         {
             Game.queMessage("The " + this._name +
                     " raises his club to smash the" + " " + targetObj._name + "!");
-
             this._clubRaisedAt = targetObj.getCoord();
             Game.getPlayer().setImminentStrike(true);
             return;
         }
         else if (Game.getPlayer().getCoord() !== this._clubRaisedAt)
         {
-            console.log("Dodge")
             Game.queMessage("The Player Dodged the " + this._name + "'s club!");
             Game.queMessage("The " + this._name + " loses its balance.");
             this._clubRaisedAt = false;
@@ -229,20 +322,42 @@ Game.Mixins.Actor_Mixins.clubStrike = {
 Game.Mixins.Actor_Mixins.getsStruck = {
     name: 'getsStruck',
     groupName: 'Actor',
-    isStruck: function(att, attacker) {
-        var dam = att;
-        this._curr_health -= dam;
-        if (this._category === 'Player')
+    isStruck: function(att) {
+        var dam = 0;
+        if (this._shieldRaised)
+            dam = (att - this["_Shield"]["_Bonus"]);
+        else
+            dam = att;
+        if (this._hasWeapon)
         {
-            Game.queMessage("The Player" +
-                    " is struck by the " + " " + attacker._name + ".");
+            dam += this.getWeaponDamage();
         }
+        this._curr_health = Math.max(0, this._curr_health - dam)
         //check if dead
-        if (this._curr_health < 0)
+        if (this._curr_health <= 0)
             this.dies();
     }
 }
 
+Game.Mixins.Actor_Mixins.Guards = {
+    name: 'Guards',
+    groupName: 'Actor',
+    init: function() {
+        this._delayer = false;
+    },
+    idle: function() {
+        if (this._delayer === false)
+        {
+            this._facing++;
+            if (this._facing > 7)
+                this._facing = 0;
+            var targetX = ROT.DIRS[8][this._facing][0];
+            var targetY = ROT.DIRS[8][this._facing][1];
+            this.drawTarget(targetX, targetY);
+        }
+        this._delayer = !this._delayer;
+    }
+}
 
 
 Game.Mixins.Actor_Mixins.enemyDies = {
@@ -263,19 +378,24 @@ Game.Mixins.Actor_Mixins.enemyDies = {
     }
 }
 
+Game.Mixins.Actor_Mixins.hasShield = {
+    name: 'hasShield',
+    groupName: 'Actor',
+    init: function() {
+        this._shieldRaised = true;
+    },
+}
+
 Game.Mixins.Actor_Mixins.playerDies = {
     name: 'Dies',
     groupName: 'Actor',
     dies: function() {
         //remove from schedule
-        Map.takeFromSchedule(this);
-        var key = this.x_coord + ',' + this.y_coord;
-        var ents = Map.entities[key]
-        // remove from  map
-        delete ents[this._category + ''];
-        // remove target, if one exists
-        delete Map.entities[this._targetKey]['Target']
-        ents['Corpse'] = new Game.Entity({template: Game.Templates.CorpseTemplates.Corpse});
+        Game.queMessage("You Died! Reload the page to start again.");
+        this.processMessages();
+        this.drawFOV();
+        this.refreshStatusDisplay();
+        this.clearSchedule();
     }
 }
 
@@ -283,6 +403,16 @@ Game.Mixins.Actor_Mixins.Player = {
     name: 'Player',
     groupName: 'Actor',
     init: function() {
+        this.a = 0
+        this._messageDisplay = Game.getTextDisplay();
+        this._statusDisplay = Game.getStatDisplay();
+        this._messages = [],
+                Game.setPlayerMessages(this._messages);
+        this._imminentStrike = false;
+        this.setUpForFloor();
+        Game.queMessage("Welcome! Write code and then press a key on this screen to control your character.")
+    },
+    setUpForFloor: function() {
         Map.addToSchedule(this);
         var that = this;
         var fovCallback = function(x, y) {
@@ -291,34 +421,57 @@ Game.Mixins.Actor_Mixins.Player = {
             return false;
         };
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
-        this._messageDisplay = Game.getTextDisplay();
-        this._statusDisplay = Game.getStatDisplay();
-        this._messages = [],
-                this._visible = {};
+        this._visible = {};
         this._roomCenters = [];
         var rooms = Map.getGrid().getRooms();
-        console.log(rooms.length);
         for (var i = 0; i < rooms.length; i++) {
             this._roomCenters.push(rooms[i].getCenter());
         }
         this._targetRoom = 0;
-        Game.setPlayerMessages(this._messages);
-        this._imminentStrike = false;
         this._seenStairCoord = null;
+    },
+    getsbonusItem: function(name, itemType, level, bonusAmount) {
+        if (this['_' + itemType])
+        {
+            if (this['_' + itemType]["_level"] >= level)
+            {
+                Game.queMessage("The " + name + " is worse than your current " + itemType + ".");
+                return false;
+            }
+        }
+        this['_' + itemType]["_name"] = name;
+        this['_' + itemType]["_level"] = level;
+        this['_' + itemType]["_Bonus"] = bonusAmount;
+        return true;
     },
     isLevelExplored: function() {
         return (this._targetRoom === this._roomCenters.length)
     },
+    shootArrowAt: function(coord) {
+        if (this._Arrows < 1)
+        {
+            Game.queMessage("You reach into your quiver and find it empty!");
+            return;
+        }
+        var ents = Map.entities[coord];
+        if (ents['Enemy'])
+        {
+            var enemy = ents['Enemy'];
+            this.arrowStrike(enemy);
+        }
+        else
+        {
+            Game.queMessage("You can't shoot an arrow at something that isn't an enemy");
+        }
+    },
     descendSpottedStairs: function() {
         if (!this._seenStairCoord)
         {
-            Game.queMessage("key "+this._seenStairCoord);
             return;
         }
         else
         {
             var coord = this._seenStairCoord + '';
-            Game.queMessage("blah"+coord);
             var coordParts = coord.split(',');
             var ents = Map.getEntities();
             var Path = new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
@@ -328,7 +481,6 @@ Game.Mixins.Actor_Mixins.Player = {
             Path.compute(this.x_coord, this.y_coord, function(x, y) {
                 steps.push([x, y]);
             });
-
             if (steps.length > 1)
             {
                 var nextX = steps[1][0], nextY = steps[1][1];
@@ -336,6 +488,7 @@ Game.Mixins.Actor_Mixins.Player = {
             }
             else
             {
+                Map.takeFromSchedule(this);
                 Map.generateMap();
             }
 
@@ -344,27 +497,47 @@ Game.Mixins.Actor_Mixins.Player = {
     setImminentStrike: function(boolean) {
         this._imminentStrike = boolean;
     },
+        watchForStrike: function() {
+        return this._imminentStrike;
+    },
     processMessages: function() {
         this._messageDisplay.clear();
         Game._messages = Game._messages.join("\r\n");
-        this._messageDisplay.drawText(1, 1, Game._messages + '', 23)
-        Game._messages = []
+        this._messageDisplay.drawText(1, 1, Game._messages + '', 23);
+        Game._messages = [];
     },
     act: function() {
+this._curr_health--
         this.drawFOV();
         Map.getEngine().lock();
+        this._shieldRaised = false;
         this._timesMoved = 0;
         window.addEventListener("keydown", this);
-        this._statusDisplay.clear();
-        this._statusDisplay.drawText(1, 1, "Health: " + this._curr_health + "/" + this._max_health, 25);
+        this.refreshStatusDisplay();
         this.processMessages();
         this.drawFOV();
+    },
+    raiseShield: function() {
+        if (this._timesMoved++ > 0)
+        {
+            return;
+        }
+        this._shieldRaised = true;
+        Game.queMessage("You raise your shield");
+    },
+    refreshStatusDisplay: function() {
+        this._statusDisplay.clear();
+        this._statusDisplay.drawText(1, 1, "Health: " + this._curr_health +
+                "/" + this._max_health + "\r\n" + "Arrows: " + this._Arrows
+                + "\r\n" + "Potions: " + this._Potions
+                + "\r\n" + "Shield: " + this._Shield["_name"]
+                + "\r\n" + "Sword: " + this._Sword["_name"]
+                + "\r\n" + "Bow: " + this._Bow["_name"]);
     },
     canMove: function(direction) {
         var offset = ROT.DIRS[8][Game.directions[direction]];
         var newX = offset[0] + this.x_coord, newY = offset[1] + this.y_coord;
         var target = newX + ',' + newY;
-        console.log("Direction:" + Map.isClear(target, this.checkObstruction || (this._category = 'Enemy')) + ',' + direction);
         var callback = function() {
             var boolean = this.checkObstruction();
             if (this._category)
@@ -376,24 +549,30 @@ Game.Mixins.Actor_Mixins.Player = {
         }
         return Map.isClear(target, callback);
     },
+    calculatePath: function(coord, ents) {
+        var coordParts = coord.split(',');
+        var that = this;
+        return  new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
+            if (ents[x + ',' + y]['Door'])
+                return true;
+            return Map.isClear(x + ',' + y, that.checkObstruction);
+        });
+    },
     exploreMap: function() {
         if (!(this._targetRoom < this._roomCenters.length))
         {
-
+            return false;
         }
         else
         {
             var coord = this._roomCenters[this._targetRoom] + '';
-            var coordParts = coord.split(',');
+
             var ents = Map.getEntities();
-            var Path = new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
-                return ents[x + ',' + y]['Floor'];
-            });
+            var Path = this.calculatePath(coord, ents);
             var steps = [];
             Path.compute(this.x_coord, this.y_coord, function(x, y) {
                 steps.push([x, y]);
             });
-
             if (steps.length > 1)
             {
                 var nextX = steps[1][0], nextY = steps[1][1];
@@ -403,33 +582,94 @@ Game.Mixins.Actor_Mixins.Player = {
             {
                 this._targetRoom++;
             }
-
+            return true;
         }
-
     },
     step: function(direction) {
         var offset = ROT.DIRS[8][Game.directions[direction]];
         var newX = offset[0] + this.x_coord, newY = offset[1] + this.y_coord;
         this.move(newX, newY);
     },
-    lookForEnemies: function() {
+    lookForEnemies: function(enemy) {
         var enemies = [];
-        this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
-            var coord = x + ',' + y;
-            if (Map.entities[coord]['Enemy']) {
-                enemies.push([x, y]);
-            }
-        });
+        if (enemy)
+            this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
+                var coord = x + ',' + y;
+                if (Map.entities[coord]['Enemy']) {
+                    if (Map.entities[coord]['Enemy']['_name'] === enemy) {
+                        enemies.push(coord);
+                    }
+                }
+            });
+        else
+            this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
+                var coord = x + ',' + y;
+                if (Map.entities[coord]['Enemy']) {
+                    enemies.push(coord);
+                }
+            });
         return enemies;
     },
+    lookForItem: function(item) {
+        var items = [];
+        if (item)
+        {
+            this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
+                var coord = x + ',' + y;
+                if (Map.entities[coord]['Item'])
+                    if (Map.entities[coord]['Item']['_name'] === item)
+                    {
+                        {
+                            if (!Map.entities[coord]['Item'].beenLifted())
+                                items.push(coord);
+                        }
+                    }
+            });
+        }
+        else
+        {
+            this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
+                var coord = x + ',' + y;
+                if (Map.entities[coord]['Item']) {
+                    if (!Map.entities[coord]['Item'].beenLifted())
+                        items.push(coord);
+                }
+            });
+        }
+        return items;
+    },
+    pickUp: function() {
+        var coord = this.x_coord + "," + this.y_coord;
+        if (Map.entities[coord]['Item'])
+        {
+            var pickedUp = Map.entities[coord]['Item'].getsPickedUp(this);
+            Map.entities[coord]['Item']._lifted = true;
+            if (pickedUp)
+            {
+                delete Map.entities[coord]['Item'];
+            }
+        }
+        else
+        {
+            Game.queMessage("There are no Items here.")
+        }
+    },
+    getsMultiItem: function(item, amount) {
+        Game.queMessage("You pick up " + amount + " " + item + ".");
+        this['_' + item] += amount;
+        return true;
+    },
+    getsWinningItem: function() {
+        //remove from schedule
+        Game.queMessage("You found the treasure and won the game - Congratulations! Reload the page to start again.");
+        this.processMessages();
+        this.drawFOV();
+        this.clearSchedule();
+    },
     attackEnemy: function(coord) {
-        var coordPartsX = coord[0], coordPartsY = coord[1];
         var ents = Map.getEntities();
-        var Path = new ROT.Path.Dijkstra(parseInt(coordPartsX), parseInt(coordPartsY), function(x, y) {
-            return ents[x + ',' + y]['Floor'];
-        });
+        var Path = this.calculatePath(coord, ents);
         var steps = [];
-        //console.log("CoordParts" + coordParts)
         Path.compute(this.x_coord, this.y_coord, function(x, y) {
             steps.push([x, y]);
         });
@@ -438,13 +678,26 @@ Game.Mixins.Actor_Mixins.Player = {
             var nextX = steps[1][0], nextY = steps[1][1];
             this.move(nextX, nextY);
         }
-
+    },
+    goTo: function(coord) {
+        var ents = Map.getEntities();
+        var Path = this.calculatePath(coord, ents);
+        var parts = coord.split(',')
+        var steps = [];
+        Path.compute(this.x_coord, this.y_coord, function(x, y) {
+            steps.push([x, y]);
+        });
+        if (steps.length > 1)
+        {
+            var nextX = steps[1][0], nextY = steps[1][1];
+            this.move(nextX, nextY);
+        }
+        if (this.x_coord === parseInt(parts[0]) && this.y_coord === parseInt(parts[1]))
+            return true;
     },
     move: function(targetX, targetY) {
         if (this._timesMoved++ > 0)
-        {
             return;
-        }
         var ents = Map.entities[this.x_coord + ',' + this.y_coord];
         var target = targetX + ',' + targetY;
         var targEnts = Map.entities[target];
@@ -502,24 +755,33 @@ Game.Mixins.Actor_Mixins.Player = {
             var keyParts = key.split(',');
             display.draw(keyParts[0], keyParts[1], 'Fogged');
         }
-    }
+    },
+    drinkPotion: function() {
+        if (this._Potions < 1)
+        {
+            Game.queMessage("You have run out of Potions!")
+        }
+        else
+        {
+            this._curr_health = Math.min(this._curr_health + 30, this._max_health)
+            Game.queMessage("You drink a Potion and feel better.")
+            this._Potions--;
+        }
+    },
 };
 Game.Mixins.Actor_Mixins.Enemy = {
     name: 'Enemy',
     groupName: 'Actor',
     init: function() {
         Map.addToSchedule(this);
-        this._displacements = [];
         this._HomeX = this.x_coord;
         this._HomeY = this.y_coord;
         this._steps = [];
         this._facing = 1;
-        this._delayer = false;
         this._targetX = null;
         this._targetY = null;
         this._whetherSeen = false;
         var that = this;
-        this._messages = [];
         var fovCallback = function(x, y) {
             if (Map.isClear(x + ',' + y, that.getOpacity))
                 return true;
@@ -532,9 +794,11 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._displacements = [];
         var that = this;
         var seen = false;
+        var player;
         this._fov.compute180(this.x_coord, this.y_coord, 8, this._facing, function(x, y) {
             var coord = x + ',' + y;
             if (Map.entities[coord]['Player']) {
+                player = Map.entities[coord]['Player'];
                 that.pathToTarget(x, y);
                 seen = true;
             }
@@ -542,48 +806,47 @@ Game.Mixins.Actor_Mixins.Enemy = {
         if (this._steps.length < 2 && (this._HomeX !== this.x_coord || this._HomeY !== this.y_coord))
             this.pathToTarget(this._HomeX, this._HomeY);
         else if (!seen && this._HomeX === this.x_coord && this._HomeY === this.y_coord)
-            this.rotate();
+        {
+            if (this.idle)
+                this.idle();
+        }
+        var hasShot = false;
         if (seen)
         {
+            if (this._Arrows)
+            {
+                this.arrowStrike(player);
+                hasShot = true;
+            }
             this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
                 var coord = x + ',' + y;
                 if (Map.entities[coord]['Enemy']) {
                     var actor = Map.entities[coord]['Enemy'];
-                    actor.pathToTarget(that._targetX, that._targetY);
+                    actor.turnToTarget(that);
                     actor.drawTarget();
                 }
             });
         }
-        this.walkToTarget();
+        if (!hasShot)
+        {
+            this.walkToTarget();
+        }
         this.drawTarget();
         this.setWhetherSeen(false);
     },
-    rotate: function() {
-        if (this._delayer === false)
-        {
-            this._facing++;
-            if (this._facing > 7)
-                this._facing = 0;
-            var targetX = ROT.DIRS[8][this._facing][0];
-            var targetY = ROT.DIRS[8][this._facing][1];
-            this.drawTarget(targetX, targetY);
-        }
-        this._delayer = !this._delayer;
+    turnToTarget: function(actor) {
+        this.pathToTarget(actor._targetX, actor._targetY);
+        var xpoint = this._steps[1][0] - this.x_coord, ypoint = this._steps[1][1] - this.y_coord;
+        var direction = xpoint + ',' + ypoint;
+        this._facing = Game.offsets[direction];
     },
     walkToTarget: function() {
         if (this._steps.length && this._steps.length > 1) {
             this._steps.splice(0, 1);
             var nextX = this._steps[0][0], nextY = this._steps[0][1];
             var found = this.move(nextX, nextY);
-            var xpoint = null, ypoint = null;
             if (!found)
-            {
-                this.pathToTarget(this._targetX, this._targetY);
-                xpoint = this._steps[1][0] - this.x_coord, ypoint = this._steps[1][1] - this.y_coord;
-                var direction = xpoint + ',' + ypoint;
-                this._facing = Game.offsets[direction];
-            }
-
+                this.turnToTarget(this);
             this.drawTarget();
         }
     },
@@ -688,7 +951,6 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._whetherSeen = boolean;
     }
 };
-
 Game.Mixins.Actor_Mixins.Minotaur = {
     name: 'Minotaur',
     groupName: 'Actor',
@@ -710,26 +972,75 @@ Game.Mixins.Actor_Mixins.Minotaur = {
         this.main();
     }
 };
-
-Game.Mixins.Actor_Mixins.Orc = {
+Game.Mixins.Actor_Mixins.Plain = {
     name: 'Orc',
     groupName: 'Actor',
     act: function() {
         this.main();
     }
 };
-
+Game.Mixins.Actor_Mixins.shortSword = {
+    name: 'Short Sword',
+    groupName: 'Actor',
+    init: function() {
+        this._Sword = {
+            _name: "Short Sword",
+            _level: "1",
+            _Bonus: "1"
+        }
+    }
+};
+Game.Mixins.Actor_Mixins.woodenBow = {
+    name: 'Wooden Bow',
+    groupName: 'Actor',
+    init: function() {
+        this._Bow = {
+            _name: "Wooden Bow",
+            _level: "1",
+            _BonusAmount: "1"
+        }
+    }
+};
+Game.Mixins.Actor_Mixins.buckler = {
+    name: 'Buckler',
+    groupName: 'Actor',
+    init: function() {
+        this._Shield = {
+            _name: "Buckler",
+            _level: "1",
+            _Bonus: "1"
+        }
+    }
+};
+Game.Mixins.Actor_Mixins.mShield = {
+    name: 'Mithril Shield',
+    groupName: 'Actor',
+    init: function() {
+        this._Shield = {
+            _name: "Mithril Shield",
+            _level: "3",
+            _Bonus: "3"
+        }
+    }
+};
 Game.Templates.ActorTemplates.PlayerTemplate = {
     category: 'Player',
     name: 'Player',
     attributes: {
-        _max_health: 500,
-        _curr_health: 500,
-        _base_attack: 2,
-        _base_defense: 1
+        _max_health: 1000,
+        _curr_health: 1,
+        _base_attack: 3,
+        _base_defense: 3,
+        _Arrows: 5,
+        _Potions: 0,
+        _arrow_attack: 5
     },
     mixins: [Game.Mixins.Actor_Mixins.Player,
+        Game.Mixins.Actor_Mixins.woodenBow,
+        Game.Mixins.Actor_Mixins.shortSword,
         Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.arrowStrike,
+        Game.Mixins.Actor_Mixins.buckler,
         Game.Mixins.Actor_Mixins.getsStruck,
         Game.Mixins.Actor_Mixins.playerDies]
 };
@@ -737,18 +1048,70 @@ Game.Templates.ActorTemplates.OrcTemplate = {
     category: 'Enemy',
     name: 'Orc',
     attributes: {
-        _max_health: 5,
-        _curr_health: 5,
+        _max_health: 10,
+        _curr_health: 10,
         _base_attack: 5,
         _base_defense: 1
     },
     mixins: [Game.Mixins.Actor_Mixins.Enemy,
-        Game.Mixins.Actor_Mixins.Orc,
+        Game.Mixins.Actor_Mixins.Plain,
+        Game.Mixins.Actor_Mixins.Guards,
         Game.Mixins.Actor_Mixins.normalStrike,
         Game.Mixins.Actor_Mixins.getsStruck,
         Game.Mixins.Actor_Mixins.enemyDies]
 };
-
+Game.Templates.ActorTemplates.OrcWarriorTemplate = {
+    category: 'Enemy',
+    name: 'Orc Warrior',
+    attributes: {
+        _max_health: 10,
+        _curr_health: 10,
+        _base_attack: 5,
+        _base_defense: 1
+    },
+    mixins: [Game.Mixins.Actor_Mixins.Enemy,
+        Game.Mixins.Actor_Mixins.hasShield,
+        Game.Mixins.Actor_Mixins.mShield,
+        Game.Mixins.Actor_Mixins.Plain,
+        Game.Mixins.Actor_Mixins.Guards,
+        Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
+        Game.Mixins.Actor_Mixins.enemyDies]
+};
+Game.Templates.ActorTemplates.ArcherTemplate = {
+    category: 'Enemy',
+    name: 'Archer',
+    attributes: {
+        _max_health: 10,
+        _curr_health: 10,
+        _base_attack: 5,
+        _base_defense: 1,
+        _Arrows: 10,
+        _arrow_attack: 2
+    },
+    mixins: [Game.Mixins.Actor_Mixins.Enemy,
+        Game.Mixins.Actor_Mixins.Plain,
+        Game.Mixins.Actor_Mixins.arrowStrike,
+        Game.Mixins.Actor_Mixins.Guards,
+        Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
+        Game.Mixins.Actor_Mixins.enemyDies]
+};
+Game.Templates.ActorTemplates.DogTemplate = {
+    category: 'Enemy',
+    name: 'Feral Dog',
+    attributes: {
+        _max_health: 5,
+        _curr_health: 5,
+        _base_attack: 2,
+        _base_defense: 1,
+    },
+    mixins: [Game.Mixins.Actor_Mixins.Enemy,
+        Game.Mixins.Actor_Mixins.Plain,
+        Game.Mixins.Actor_Mixins.normalStrike,
+        Game.Mixins.Actor_Mixins.getsStruck,
+        Game.Mixins.Actor_Mixins.enemyDies]
+};
 Game.Templates.ActorTemplates.MinotaurTemplate = {
     category: 'Enemy',
     name: 'Minotaur',
@@ -759,11 +1122,130 @@ Game.Templates.ActorTemplates.MinotaurTemplate = {
         _base_defense: 1
     },
     mixins: [Game.Mixins.Actor_Mixins.Minotaur,
+        Game.Mixins.Actor_Mixins.Guards,
         Game.Mixins.Actor_Mixins.Enemy,
         Game.Mixins.Actor_Mixins.clubStrike,
         Game.Mixins.Actor_Mixins.getsStruck,
         Game.Mixins.Actor_Mixins.enemyDies]
 };
+Game.Mixins.Item_Mixins = {};
+Game.Mixins.Item_Mixins.item = {
+    name: 'Item',
+    groupName: 'Item',
+    beenLifted: function() {
+        return this._lifted;
+    }
+}
 
+Game.Mixins.Item_Mixins.winningItem = {
+    name: 'winningItem',
+    groupName: 'Item',
+    getsPickedUp: function(actor) {
+         actor.getsWinningItem();
+    },
+},
 
+Game.Mixins.Item_Mixins.multiItem = {
+    name: 'multiItem',
+    groupName: 'Item',
+    getsPickedUp: function(actor) {
+        return actor.getsMultiItem(this._name, this._amount);
+    },
+},
+        Game.Mixins.Item_Mixins.bonusItem = {
+            name: 'bonusItem',
+            groupName: 'Item',
+            getsPickedUp: function(actor) {
+                return actor.getsbonusItem(this._name, this._itemType, this._level, this._bonusAmount);
+            }
+        }
+Game.Templates.Item_Templates = {};
+Game.Templates.Item_Templates.arrowBundle = {
+    category: 'Item',
+    name: 'Arrows',
+    attributes: {
+        _amount: 5
+    },
+    mixins: [Game.Mixins.Item_Mixins.multiItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.treasure = {
+    category: 'Item',
+    name: 'Treasure',
+    mixins: [Game.Mixins.Item_Mixins.winningItem, Game.Mixins.Item_Mixins.item]
+};
+
+Game.Templates.Item_Templates.Potions = {
+    category: 'Item',
+    name: 'Potions',
+    attributes: {
+        _amount: 5
+    },
+    mixins: [Game.Mixins.Item_Mixins.multiItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.copperShield = {
+    category: 'Item',
+    name: 'Copper Shield',
+    attributes: {
+        _name: "Copper Shield",
+        _itemType: "Shield",
+        _level: "2",
+        _bonusAmount: "2"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.mithrilShield = {
+    category: 'Item',
+    name: 'Mithril Shield',
+    attributes: {
+        _name: "Mithril Shield",
+        _itemType: "Shield",
+        _level: "3",
+        _bonusAmount: "3"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.ironSword = {
+    category: 'Item',
+    name: 'Iron Sword',
+    attributes: {
+        _name: "Iron Sword",
+        _itemType: "Sword",
+        _level: "2",
+        _bonusAmount: "2"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.mithrilSword = {
+    category: 'Item',
+    name: 'Mithril Sword',
+    attributes: {
+        _name: "Mithril Sword",
+        _itemType: "Sword",
+        _level: "3",
+        _bonusAmount: "3"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.longBow = {
+    category: 'Item',
+    name: 'Long Bow',
+    attributes: {
+        _name: "Long Bow",
+        _itemType: "Bow",
+        _level: "2",
+        _bonusAmount: "2"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
+Game.Templates.Item_Templates.mithrilBow = {
+    category: 'Item',
+    name: 'Mithril Bow',
+    attributes: {
+        _name: "Mithril Bow",
+        _itemType: "Bow",
+        _level: "3",
+        _bonusAmount: "3"
+    },
+    mixins: [Game.Mixins.Item_Mixins.bonusItem, Game.Mixins.Item_Mixins.item]
+};
 
