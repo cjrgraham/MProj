@@ -89,6 +89,19 @@ Game.Mixins.Room_Mixins.hasMinotaur = {
     }
 }
 
+Game.Mixins.Room_Mixins.hasTableSet = {
+    name: 'hasTableSet',
+    init: function() {
+var parts = this._center.split(",");
+            new Game.Entity({template: Game.Templates.DecorationTemplates.Table,
+                x_coord: parseInt(parts[0]), y_coord: parseInt(parts[1])});
+            new Game.Entity({template: Game.Templates.DecorationTemplates.LeftChairTile,
+                x_coord: parseInt(parts[0])-1, y_coord: parseInt(parts[1])});
+            new Game.Entity({template: Game.Templates.DecorationTemplates.RightChairTile,
+                x_coord: parseInt(parts[0])+1, y_coord: parseInt(parts[1])});
+    }
+}
+
 Game.Mixins.Room_Mixins.hasStairs = {
     name: 'hasStair',
     init: function() {
@@ -107,6 +120,12 @@ Game.Mixins.Room_Mixins.hasShelf1 = {
     name: 'hasShelf1',
     init: function() {
         placeEntityAtTop(this, Game.Templates.DecorationTemplates.shelf1);
+    }
+}
+Game.Mixins.Room_Mixins.hasBed = {
+    name: 'hasBed',
+    init: function() {
+        placeEntityAtTop(this, Game.Templates.DecorationTemplates.BedTile);
     }
 }
 
@@ -213,6 +232,9 @@ Game.Mixins.Room_Mixins.hasOrcWarrior = {
 Game.Templates.RoomTemplates = {}
 
 
+Game.Templates.RoomTemplates.BedRoom = {
+    mixins: [Game.Mixins.Room_Mixins.hasTableSet, Game.Mixins.Room_Mixins.hasBed, Game.Mixins.Room_Mixins.hasBookShelf, Game.Mixins.Room_Mixins.hasShelf1,Game.Mixins.Room_Mixins.hasPot]
+};
 Game.Templates.RoomTemplates.PotionRoom = {
     mixins: [Game.Mixins.Room_Mixins.hasBookShelf,Game.Mixins.Room_Mixins.hasBookShelf,
     Game.Mixins.Room_Mixins.hasShelf1, Game.Mixins.Room_Mixins.hasShelf2, Game.Mixins.Room_Mixins.hasPot,

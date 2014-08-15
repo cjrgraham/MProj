@@ -19,8 +19,6 @@ Game.Room = function(properties) {
         }
 
     }
-    // Room center should always be empty so it can contain impassible scenery
-    this._freeCoords[(parts[0]-this._xMin)][1].splice(parts[1]-this._yMin, 1);
     Game.Element.call(this, properties);
 };
 

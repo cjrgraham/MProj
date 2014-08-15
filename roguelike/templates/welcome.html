@@ -8,10 +8,20 @@
 
 {% block body_block %}
 
-        <h1>Welcome to Myrl!</h1>
+    <center>    <h1>Welcome to JSRogue!</h1>
 {% if user.is_authenticated %}
+Click <a href="/play">here</a> to return to the play area.
         {% else %}
-  Please login or <a href="/register">register.</a>
-        {% endif %}
-
+  Please login above or <a href="/register">register.</a>
+<br><br>
+{% endif %}
+  <h2>Acknowledgements:</h2><br>
+Game made using the ROT.js library roguelike library (URL:http://ondras.github.io/rot.js/hp/), the Dawnlike tileset (URL: http://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v18), the Django web-developement framework and sounds from http://www.freesfx.co.uk .
+<br><br>
+It contains code adapted from the following tutorials: http://www.codingcookies.com/2013/04/01/building-a-roguelike-in-javascript-part-1/ , http://www.roguebasin.com/index.php?title=Rot.js_tutorial . It's code in general was also influenced by the approach outilned in these tutorials.
+<br><br>
+The code for this website can be found at: https://github.com/cjrgraham/MProj .
+        
+</center>
 {% endblock %}
+

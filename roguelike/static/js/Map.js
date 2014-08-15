@@ -258,10 +258,11 @@ var Map = {
         var rooms = this._grid.getRooms();
         var x = rooms[0].getLeft(), y = rooms[0].getTop();
         var level = Game.Levels[this._level++];
+      
         for (var i = 1; i < rooms.length-1; i++) {
             new Game.Room({Room: rooms[i], template: level[Math.floor(Math.random() * level.length)]});
         }
-        if(level===Game.Levels.length-1)
+        if(this._level===Game.Levels.length)
         {
                     new Game.Room({Room: rooms[rooms.length-1], template: 
                 Game.Templates.RoomTemplates.Treasure});

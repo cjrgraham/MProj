@@ -20,7 +20,9 @@ Game.imageMap = {
                 'Minotaur': [80, 0],
                 'Fogged':[0,32],
                 'Target':[48,16],
-                'Chair':[32,16],
+                'LeftChair':[0,16],
+                'RightChair':[32,16],
+                'Table':[16,16],
                 'Grave':[16,32],
                 'Skull':[48,32],
                 'Bone':[64,32],
@@ -42,7 +44,8 @@ Game.imageMap = {
                 'Broken Pot':[64,96],
                 'Grass': [32,112],
                 'Pebbles': [80,112],
-                'Orc Warrior':[96,80]
+                'Orc Warrior':[96,80],
+		'Treasure':[80,80]
 };
 
 

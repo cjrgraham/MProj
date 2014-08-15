@@ -1,0 +1,10 @@
+Game.Sounds = {}
+Game.Sounds.hitSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/getHit.mp3']});
+Game.Sounds.attackSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/Attack.mp3']});
+Game.Sounds.arrowSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/arrow.mp3']});
+Game.Sounds.drinkSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/drink.mp3']});
+Game.Sounds.doorSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/door.mp3']});
+Game.Sounds.pickUpSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/pickUp.mp3']});
+Game.Sounds.loseSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/lose.mp3']});
+Game.Sounds.treasureSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/treasure.mp3']});
+Game.Sounds.stairSound=new Howl({ urls:[DJANGO_STATIC_URL+'sound/stairs.mp3']});

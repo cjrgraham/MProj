@@ -163,6 +163,23 @@ Game.Templates.DecorationTemplates.SkullTile = {
     category: 'Decoration',
     name: 'Skull'
 };
+Game.Templates.DecorationTemplates.LeftChairTile = {
+    category: 'Decoration',
+    name: 'LeftChair'
+};
+Game.Templates.DecorationTemplates.RightChairTile = {
+    category: 'Decoration',
+    name: 'RightChair'
+};
+Game.Templates.DecorationTemplates.BedTile = {
+    category: 'Decoration',
+    name: 'Bed'
+};
+Game.Templates.DecorationTemplates.Table = {
+    category: 'Decoration',
+    name: 'Table',
+    mixins: [Game.Mixins.General_Mixins.obstructs]
+};
 Game.Templates.DecorationTemplates.BoneTile = {
     category: 'Decoration',
     name: 'Bone',
@@ -251,6 +268,10 @@ Game.Mixins.Actor_Mixins.normalStrike = {
            targetObj.drawTarget();
         }
         targetObj.isStruck(att, this);
+           if((this._name+'')==="Player")
+           {
+	    this._hasAttacked=true;
+	   }
     }
 },
 Game.Mixins.Actor_Mixins.arrowStrike = {
@@ -275,10 +296,6 @@ Game.Mixins.Actor_Mixins.arrowStrike = {
         }
         Game.queMessage("The " + this._name +
                 " shoots an arrow and wounds the " + " " + targetObj._name + ".");
-        if (targetObj._category === 'Enemy') {
-            targetObj.turnToTarget(this.x_coord + ',' + this.y_coord);
-            targetObj.drawTarget();
-        }
                 if (targetObj._category === 'Enemy') {
            targetObj._targetX=this.x_coord; 
            targetObj._targetY=this.y_coord;
@@ -286,7 +303,12 @@ Game.Mixins.Actor_Mixins.arrowStrike = {
            targetObj.drawTarget();
         }
         targetObj.isStruck(att, this);
-        this._Arrows--;
+        this.Arrows--;
+           if((this._name+'')==="Player")
+           {
+	    this._arrowShot=true;
+	   }
+
     }
 }
 
@@ -332,10 +354,20 @@ Game.Mixins.Actor_Mixins.getsStruck = {
         {
             dam += this.getWeaponDamage();
         }
-        this._curr_health = Math.max(0, this._curr_health - dam)
+        this.currHealth = Math.max(0, this.currHealth - dam)
         //check if dead
-        if (this._curr_health <= 0)
+        if (this.currHealth <= 0)
+        {
             this.dies();
+              
+	}
+                else
+        {
+         if((this._name+'')==="Player")
+           {
+	    this._hasBeenHit=true;
+	   }
+        } 
     }
 }
 
@@ -395,6 +427,7 @@ Game.Mixins.Actor_Mixins.playerDies = {
         this.processMessages();
         this.drawFOV();
         this.refreshStatusDisplay();
+        Game.Sounds.loseSound.play();
         this.clearSchedule();
     }
 }
@@ -425,7 +458,9 @@ Game.Mixins.Actor_Mixins.Player = {
         this._roomCenters = [];
         var rooms = Map.getGrid().getRooms();
         for (var i = 0; i < rooms.length; i++) {
-            this._roomCenters.push(rooms[i].getCenter());
+            var center =rooms[i].getCenter();
+            //make the center one to the left, as centre may be impassible due to presence of table.
+            this._roomCenters.push(center[0]-1+','+center[1]);
         }
         this._targetRoom = 0;
         this._seenStairCoord = null;
@@ -448,7 +483,7 @@ Game.Mixins.Actor_Mixins.Player = {
         return (this._targetRoom === this._roomCenters.length)
     },
     shootArrowAt: function(coord) {
-        if (this._Arrows < 1)
+        if (this.Arrows < 1)
         {
             Game.queMessage("You reach into your quiver and find it empty!");
             return;
@@ -490,6 +525,7 @@ Game.Mixins.Actor_Mixins.Player = {
             {
                 Map.takeFromSchedule(this);
                 Map.generateMap();
+                Game.Sounds.stairSound.play();
             }
 
         }
@@ -507,7 +543,7 @@ Game.Mixins.Actor_Mixins.Player = {
         Game._messages = [];
     },
     act: function() {
-this._curr_health--
+        this.processSounds();
         this.drawFOV();
         Map.getEngine().lock();
         this._shieldRaised = false;
@@ -517,6 +553,40 @@ this._curr_health--
         this.processMessages();
         this.drawFOV();
     },
+    processSounds: function() {
+
+        if(this._hasAttacked)
+          {
+           Game.Sounds.attackSound.play();             
+          }
+        else if(this._hasOpened)
+          {
+           Game.Sounds.doorSound.play(); 
+          }
+        else if(this._arrowShot)
+          {
+           Game.Sounds.arrowSound.play();   
+          }
+        else if(this._hasBeenHit)
+          {
+           Game.Sounds.hitSound.play();   
+          }
+        else if(this._hasDrank)
+          {
+           Game.Sounds.drinkSound.play();   
+          }
+        else if(this._hasPickedUp)
+          {
+           Game.Sounds.pickUpSound.play();   
+          }
+   this._hasPickedUp=false;
+   this._hasOpened=false;
+   this._hasBeenHit=false;
+   this._hasAttacked=false;
+   this._arrowShot=false;
+   this._hasDrank=false;
+    },
+
     raiseShield: function() {
         if (this._timesMoved++ > 0)
         {
@@ -527,9 +597,9 @@ this._curr_health--
     },
     refreshStatusDisplay: function() {
         this._statusDisplay.clear();
-        this._statusDisplay.drawText(1, 1, "Health: " + this._curr_health +
-                "/" + this._max_health + "\r\n" + "Arrows: " + this._Arrows
-                + "\r\n" + "Potions: " + this._Potions
+        this._statusDisplay.drawText(1, 1, "Health: " + this.currHealth +
+                "/" + this._max_health + "\r\n" + "Arrows: " + this.Arrows
+                + "\r\n" + "Potions: " + this.Potions
                 + "\r\n" + "Shield: " + this._Shield["_name"]
                 + "\r\n" + "Sword: " + this._Sword["_name"]
                 + "\r\n" + "Bow: " + this._Bow["_name"]);
@@ -610,7 +680,7 @@ this._curr_health--
             });
         return enemies;
     },
-    lookForItem: function(item) {
+    lookForItems: function(item) {
         var items = [];
         if (item)
         {
@@ -648,6 +718,7 @@ this._curr_health--
             {
                 delete Map.entities[coord]['Item'];
             }
+            this._hasPickedUp=true;
         }
         else
         {
@@ -656,7 +727,7 @@ this._curr_health--
     },
     getsMultiItem: function(item, amount) {
         Game.queMessage("You pick up " + amount + " " + item + ".");
-        this['_' + item] += amount;
+        this[''+item] += amount;
         return true;
     },
     getsWinningItem: function() {
@@ -664,6 +735,7 @@ this._curr_health--
         Game.queMessage("You found the treasure and won the game - Congratulations! Reload the page to start again.");
         this.processMessages();
         this.drawFOV();
+        Game.Sounds.treasureSound.play();
         this.clearSchedule();
     },
     attackEnemy: function(coord) {
@@ -716,6 +788,7 @@ this._curr_health--
         else if (targEnts['Door'])
         {
             targEnts['Door'].open(this);
+            this._hasOpened=true;
         }
     },
     handleEvent: function(e) {
@@ -729,7 +802,7 @@ this._curr_health--
         var display = Game.getDisplay();
         var seenLastTurn = this._visible;
         var that = this;
-        this._visible = {};
+        this._visible = {}; 
         this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
             var key = x + ',' + y;
             var ents = Map.entities[key];
@@ -757,15 +830,16 @@ this._curr_health--
         }
     },
     drinkPotion: function() {
-        if (this._Potions < 1)
+        if (this.Potions < 1)
         {
             Game.queMessage("You have run out of Potions!")
         }
         else
         {
-            this._curr_health = Math.min(this._curr_health + 30, this._max_health)
+            this.currHealth = Math.min(this.currHealth + 30, this._max_health)
             Game.queMessage("You drink a Potion and feel better.")
-            this._Potions--;
+            this.Potions--;
+            this._hasDrank=true;
         }
     },
 };
@@ -777,7 +851,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this._HomeX = this.x_coord;
         this._HomeY = this.y_coord;
         this._steps = [];
-        this._facing = 1;
+        this._facing = Math.floor(Math.random()*8);
         this._targetX = null;
         this._targetY = null;
         this._whetherSeen = false;
@@ -813,7 +887,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         var hasShot = false;
         if (seen)
         {
-            if (this._Arrows)
+            if (this.Arrows)
             {
                 this.arrowStrike(player);
                 hasShot = true;
@@ -997,7 +1071,7 @@ Game.Mixins.Actor_Mixins.woodenBow = {
         this._Bow = {
             _name: "Wooden Bow",
             _level: "1",
-            _BonusAmount: "1"
+            _Bonus: "1"
         }
     }
 };
@@ -1027,12 +1101,12 @@ Game.Templates.ActorTemplates.PlayerTemplate = {
     category: 'Player',
     name: 'Player',
     attributes: {
-        _max_health: 1000,
-        _curr_health: 1,
+        _max_health: 1000000,
+        currHealth: 1000000,
         _base_attack: 3,
         _base_defense: 3,
-        _Arrows: 5,
-        _Potions: 0,
+        Arrows: 5,
+        Potions: 0,
         _arrow_attack: 5
     },
     mixins: [Game.Mixins.Actor_Mixins.Player,
@@ -1049,7 +1123,7 @@ Game.Templates.ActorTemplates.OrcTemplate = {
     name: 'Orc',
     attributes: {
         _max_health: 10,
-        _curr_health: 10,
+        currHealth: 10,
         _base_attack: 5,
         _base_defense: 1
     },
@@ -1065,7 +1139,7 @@ Game.Templates.ActorTemplates.OrcWarriorTemplate = {
     name: 'Orc Warrior',
     attributes: {
         _max_health: 10,
-        _curr_health: 10,
+        currHealth: 10,
         _base_attack: 5,
         _base_defense: 1
     },
@@ -1083,10 +1157,10 @@ Game.Templates.ActorTemplates.ArcherTemplate = {
     name: 'Archer',
     attributes: {
         _max_health: 10,
-        _curr_health: 10,
+        currHealth: 10,
         _base_attack: 5,
         _base_defense: 1,
-        _Arrows: 10,
+        Arrows: 10,
         _arrow_attack: 2
     },
     mixins: [Game.Mixins.Actor_Mixins.Enemy,
@@ -1102,7 +1176,7 @@ Game.Templates.ActorTemplates.DogTemplate = {
     name: 'Feral Dog',
     attributes: {
         _max_health: 5,
-        _curr_health: 5,
+        currHealth: 5,
         _base_attack: 2,
         _base_defense: 1,
     },
@@ -1117,7 +1191,7 @@ Game.Templates.ActorTemplates.MinotaurTemplate = {
     name: 'Minotaur',
     attributes: {
         _max_health: 25,
-        _curr_health: 25,
+        currHealth: 25,
         _base_attack: 20,
         _base_defense: 1
     },
