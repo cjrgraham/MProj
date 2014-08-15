@@ -1101,12 +1101,12 @@ Game.Templates.ActorTemplates.PlayerTemplate = {
     category: 'Player',
     name: 'Player',
     attributes: {
-        _max_health: 1000000,
-        currHealth: 1000000,
+        _max_health: 1000,
+        currHealth: 1000,
         _base_attack: 3,
         _base_defense: 3,
         Arrows: 5,
-        Potions: 0,
+        Potions: 5,
         _arrow_attack: 5
     },
     mixins: [Game.Mixins.Actor_Mixins.Player,

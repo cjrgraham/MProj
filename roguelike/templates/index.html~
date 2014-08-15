@@ -463,7 +463,7 @@ Consider the following code snippet:
 <br><br>
 <pre>var strikeCheck = this.watchForStrike()</pre>
 <br>
-By now it should be clear what is going on to the right of the '=' sign in the code above: we are executing the 'watchForStrike' method of 'this'. It might also be apparent what 'watchForStrike' does: it checks if the player character is currently facing an incoming strike. But what's happening to the left of the '=' sign. What we're doing is assigning the <b>return value</b> of the execution of the watchForStrike
+By now it should be clear what is going on to the right of the '=' sign in the code above: we are executing the 'watchForStrike' method of 'this'. It might also be apparent what 'watchForStrike' does: it checks if the player character is currently facing an incoming strike. But what's happening to the left of the '=' sign? What we're doing is assigning the <b>return value</b> of the execution of the watchForStrike
 method to the variable 'strikeCheck'. If the player is about to be hit, strikeCheck will hold the value true, otherwise it will hold the value
 false. We can then use this variable in the rest of our code.
 
@@ -481,6 +481,29 @@ if (strikeCheck)
 </pre>
 As before we store the return value of the call of watchForStrike in strikeCheck. But this time we actually use the variable for something - to check if we should execute some other instructions between the curly braces. We do this by placing the variable to be evaluated as true or false in the brackets after the 'if'. No intstructions are present in this example between the curly brackets, but if we, for instance, placed
 'this.step('N')' between the braces, this line would be executed if the value of strikeCheck was true: that is, if the player was about to be struck. Multiple lines can be placed between the braces, and any code below the braces is executed after that inside the braces is. Otherwise, if strikeCheck is false, the code between the braces is skipped and the code after the braces, if present, is executed.
+<br><br>
+We can also use certain operators to form more complex 'if' statements. In the following example:
+<pre>
+if (strikeCheck&&1>0)
+{
+
+}
+</pre>
+The use of <b>'&&'</b> is used to form a conditional which will only perform the code in the curly braces if the expressions on either side of it have a value of true. Think of it is meaning 'and'; <b>'||'</b> can be used in a similar way, and you can think of it as 'or', as it checks if at least one of the expressions on either side is true before executing the code in the curly braces. 
+<br><br>
+Note: Sometimes it is useful to use the <b>'else'</b> keyword with 'if' statements. In the following example:
+<br><br>
+<pre>var strikeCheck = this.watchForStrike()
+if (strikeCheck)
+{
+
+}
+else
+{
+
+}
+</pre>
+The code in the curly braces in the 'else' clause will be exacuted only if the strikeCheck variable has a false value, and the code in the curly braces just after the 'if' clause will be ignored. Afterwards later lines of code are executed as normal.
 <br>
 <h3 id="S6">Arrays</h3>
 Some method calls return a special typr of object: <b>arrays</b>. Any array is a container object which keeps other objects in a certain order. Consider the following example:
@@ -513,6 +536,18 @@ if (this.canMove(direction))
 The purpose of the outer 'for' statement followed by brackets and outer curly braces is to execute the code enclosed by the outer curly brackets repeatedely with a different direction value assigned to the variable 'direction' from the Game.directions array each time. This is done as many times as there are directions in Game.directions. To illustrate how to use the 'direction' variable, I have placed some inner code which checks if we can movde in the currently selected direction from Game.directions. You could place some code in the inner curly brackets which would be executed if that direction was free to move in. After the code has been executed with every different direction value in the Game.directions array, the rest of the code below is executed.
 <br><br>
 Note: The use of the variable name 'direction' is arbritrary - we could just as well have written 'for (blah in Game.directions)' instead, and use 'blah' as a variable.
+
+Also, you can use the <b>'break'</b> keyword to leave a loop early, although doing so is rarely useful in JSRogue. In the following example:
+<pre>for (direction in Game.directions)
+{
+if (this.canMove(direction))
+ {
+   if(direction==='S')
+   break
+ }
+}
+</pre>
+We break out of the loop once we reach a direction equal to 'S'. <b>'==='</b> is  how we test for equality in javascript.
 <br><br>
 To see a for loop used to execute a line of code a defined amount of times, consider the following code:
 <br>
