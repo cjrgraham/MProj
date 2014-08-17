@@ -6,13 +6,10 @@
 
 {% block body_block %}
 
-        <h1>Register with Myrl</h1>
-
+        <h1>Register here</h1>
         {% if registered %}
-        Myrl says: <strong>thank you for registering!</strong>
-        <a href="/">Return to the homepage.</a><br />
+        Already registered: <a href="/">Return to the homepage.</a><br />
         {% else %}
-        Myrl says: <strong>register here!</strong><br />
 
         <form id="user_form" method="post" action="/register/"
                 enctype="multipart/form-data">

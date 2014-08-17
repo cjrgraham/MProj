@@ -96,7 +96,7 @@ pre {white-space: pre;}
           </div>
 
 <div class="row-fluid">
-<h1>Code Blocks</h1><h3>(Mouse over for code info):</h3>
+<h1>Code Blocks</h1><h3>(Mouse over code for help; click headings to expand):</h3>
 </div>
 
 <div id="accordion">
@@ -425,7 +425,7 @@ Its a good idea to drink some potions when your health dips too low. Remember, y
 <li><a href="#S7">The 'Directions' array</a></li>
 <li><a href="#S8">'For' Loops</a></li>
 <li><a href="#S9">'While' Loops</a></li>
-<li><a href="#S10">Method List</a></li>
+<li><a href="#S10">Methods</a></li>
 <li><a href="#S12">Object List</a></li>
 <li><a href="#S13">Tips</a></li>
 </ol>
@@ -568,11 +568,19 @@ this.drinkPotion()
 </pre>
 The code between the curly braces in this example will be executed until the statement 'this.countHealth()<500' stops being true: that is, until the players current health exceeds 499.
 <br><br>
-<h3 id="S10">Method List</h3>
+<h3 id="S10">Methods</h3>
 <br>
 Note: You can can only perform one of the following actions a turn: moving, physically attacking an enemy, raising your shield. Firing arrows, quaffing potions, looking for enemies and so on can be performed as many times as you wish.
 <br><br>
-<h5>this.exploreMap()</h5>
+Even more important note: You melee attack enemies by moving into them. Therefore very method which makes you move can also make you attack.
+<br><br>
+<h5>this.goTo()</h5>
+Function: This will move you towards an enemy or item passed as parameter.It will return the value true once you are on the same square as the object passed as parameter.
+<br><br>
+Parameters: Item or enemy to be moved toward. Must be a variable, not simply the name of the type of the target object enclosed in speech marks.
+<br><br>
+<h5>this.exploreMap()</h5> 
+<br>
 Function: This will move you towards the centre of each room in the map, one step each turn. After you've used this to go to the centre of each room, executing it will do nothing.
 <br><br>
 Parameters: None.
@@ -633,17 +641,17 @@ Function: This returns an array containing references to all items you've seen.
 Parameters: You can supply an optional parameter consisting of the name of the type of item you want to look for. For instance, if this.lookForEnemies('Potions') was executed, all items which were not Potions would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
 <h5>this.countPotions()</h5>
-Function: This returns a the amount of potions you have.
+Function: This returns the amount of potions you have.
 <br><br>
 Parameters: None
 <br><br>
 <h5>this.countArrows()</h5>
-Function: This returns a the amount of Arrows you have.
+Function: This returns the amount of Arrows you have.
 <br><br>
 Parameters: None
 <br><br>
 <h5>this.countHealth()</h5>
-Function: This returns a the amount of health you have.
+Function: This returns the amount of health you have.
 <br><br>
 Parameters: None
 <br><br>
@@ -773,8 +781,8 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 <li>If you want to stop code from executing while you type, simply type a line of gibberish to induce an error in the code, and delete it when you wnt to execute the code again.</li>
 <li>Remeber to use speech marks to encolse the name of an object or direction you want to  use as a parameter, and to use the correct case. Variables, on the other hand, aren't enclosed in speechmarks.</li>
 <li>Use double backspaces in your code - // - to preface comments. The game won't attempt to execute these, so you can use them to write handy notes. Or to temporarily negate lines of code you don't want to delete.</li>
-<li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to 'a', whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
-<li>Play around with the code! The game is deliberately farely short, so you don't lose to much progress if you die because of this.</li>
+<li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to a, whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
+<li>Play around with the code! The game is deliberately fairly short, so you don't lose to much progress if you die because of this.</li>
 <li>Have Fun!</li>
 </ul>
 </div>

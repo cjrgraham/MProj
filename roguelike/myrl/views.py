@@ -35,9 +35,7 @@ def register(request):
     # Like before, get the request's context.
     context = RequestContext(request)
 
-    # A boolean value for telling the template whether the registration was successful.
-    # Set to False initially. Code changes value to True when registration succeeds.
-    registered = False
+    registered = request.user.is_authenticated()
 
     # If it's a HTTP POST, we're interested in processing form data.
     if request.method == 'POST':
