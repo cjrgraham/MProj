@@ -8,10 +8,11 @@
 
         <h1>Register here</h1>
         {% if registered %}
-        <a href="/">Return to the homepage.</a><br />
+        Already registered: <a href="/">Return to the homepage.</a><br />
         {% else %}
-        Myrl says: <strong>register here!</strong><br />
-
+        Do not inclue spaces in your username
+        <br>
+        <br>
         <form id="user_form" method="post" action="/register/"
                 enctype="multipart/form-data">
 
