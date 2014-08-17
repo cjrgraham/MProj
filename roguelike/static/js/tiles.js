@@ -798,7 +798,24 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     },
     handleEvent: function(e) {
-        var text = $('#inputArea').val();
+          if(e.keyCode==80)
+          {
+           if(this._paused)
+             {
+              this._paused=false
+              $(".brand").html("JSRogue");
+             }
+           else
+             {
+              this._paused=true
+               $(".brand").html("JSRogue: Paused");
+             }
+          }
+        var text
+        if (this._paused)
+           text="Stop the Game"
+        else
+           text= $('#inputArea').val();
         eval(text);
         this._imminentStrike = false;
         window.removeEventListener("keydown", this);

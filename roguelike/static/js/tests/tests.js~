@@ -93,7 +93,7 @@ var ents = Map.getEntities();
 assert.ok(ents[parts[0]+','+parseInt(parts[1]-1)]["Enemy"]===enemy,"Enemy is present one square north before shooting")
 // Shoot enemy.
 player.shootArrowAt(enemy.getCoord());
-assert.ok(player.currHealth<oldHealth, "Player was damaged by the deflected arrow"+player.currHealth);
+assert.ok(player.currHealth<oldHealth, "Player was damaged by the deflected arrow");
 });
 
 QUnit.test( "Arrow shot at Non-Shielded enemy hurts it", function(assert) {
@@ -262,4 +262,46 @@ var newPlayer = Game.getPlayer();
 var newEnts = Map.getEntities();
 assert.ok(!(newEnts[newPlayer.getCoord()]["Stair"]),"And the stairs are gone")
 assert.ok(newEnts[newPlayer.getCoord()]["Player"]===newPlayer,"But the new player is present")
+});
+
+QUnit.test("Looking for enemies works properly", function(assert) {
+// When splitting coords, x is first, y second.
+var player = Game.getPlayer();
+var parts = player.getCoord().split(',');
+// Look for enemies
+var enemies = player.lookForEnemies();
+assert.ok(!(enemies.length),"Can't see any enemies")
+// Place Enemy 1 coord north of player.
+var enemy = new Game.Entity({template: Game.Templates.ActorTemplates.OrcWarriorTemplate, x_coord: parseInt(parts[0]), y_coord: parseInt(parts[1])-1});
+// Check enemy is there.
+var ents = Map.getEntities(); 
+assert.ok(ents[parts[0]+','+parseInt(parts[1]-1)]["Enemy"]===enemy,"Enemy is present one square north Now")
+enemies = player.lookForEnemies();
+assert.ok(enemies.length,"And he is spotted when the player looks")
+assert.ok(ents[enemies[0]]["Enemy"]===enemy,"And he is at the spot on map recorded by the player looking")
+enemies = player.lookForEnemies(enemy._name);
+assert.ok(enemies.length,"Is also spotted when we look for him by his name")
+enemies = player.lookForEnemies("this is the wrong name");
+assert.ok(!(enemies.length),"But not when we use the wrong name")
+});
+
+QUnit.test("Looking for items works properly", function(assert) {
+// When splitting coords, x is first, y second.
+var player = Game.getPlayer();
+var parts = player.getCoord().split(',');
+// Look for items
+var items = player.lookForItems();
+assert.ok(!(items.length),"Can't see any items")
+// Place Enemy 1 coord north of player.
+var item = new Game.Entity({template: Game.Templates.Item_Templates.longBow, x_coord: parseInt(parts[0]), y_coord: parseInt(parts[1])});
+// Check enemy is there.
+var ents = Map.getEntities(); 
+assert.ok(ents[parts[0]+','+parts[1]]["Item"]===item,"Item is present on same square now")
+items = player.lookForItems();
+assert.ok(items.length,"And  is spotted when the player looks")
+assert.ok(ents[enemies[0]]["Item"]===item,"And is at the spot on map recorded by the player looking")
+items = player.lookForItems(item._name);
+assert.ok(items.length,"Is also spotted when we look for it by name")
+items = player.lookForItems("this is the wrong name");
+assert.ok(!(items.length),"But not when we use the wrong name")
 });

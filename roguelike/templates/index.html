@@ -42,7 +42,7 @@ pre {white-space: pre;}
 {% block body_block %}
 <div id="tabs">
 <ul>
-<li><a href="#tabs-1"><span>Play</span></a></li>
+<li><a href="#tabs-1"><span>Game</span></a></li>
 <li><a href="#tabs-2"><span>Code</span></a></li>
 <li><a href="#tabs-3"><span>Guide</span></a></li>
 </ul>
@@ -172,7 +172,7 @@ How to Use it:
 -------------------------
 
 This is best used in conjunction with the main step action. Can be usefull for dodjing attacks. Also, you can cycle through the keys in Game.directions using a for loop. Check the guide to see how to do this. This way, you can check if any adjacent square is free in a few lines of code.
-">if (this.canMove(/*Put direction here*/))
+">if (this.canMove())
 {
 
 }
@@ -260,7 +260,7 @@ How to Use it:
 
 Use it to step in a particular direction. You probably want to make sure you can do so first, though.
 ">
-this.step(/*Direction Goes Here*/)
+this.step()
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -389,20 +389,24 @@ this.shootArrowAt();
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
 <div class="span4">
-              <h3>Drink Potion</h3>
+              <h3>Drink Potions</h3>
             
 <pre title="-------------------------
 What it does: 
 -------------------------
 
-The first line of this command makes you ('this') drink a potion, healing 30 of your health points
+This command makes you drink potions until your health is greater than 10.
 
 -------------------------
 How to Use it:
 -------------------------
 
-Its a good idea to drink some potions when your health dips too low. Remember, you can do this multiple times in one turn!
-">this.drinkPotion();
+Its a good idea to drink some potions when your health dips too low. Remember, you can do this multiple times in one turn! Also, replace the number 10 with the amount of health below which you start drinking potions.
+">
+while (this.countHealth()<10)
+{
+this.drinkPotion()
+}
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -441,6 +445,8 @@ then controls your character! Hopefully the game serves as a fun way for you to 
 Playing the game involves writing code in the Text-Area of the code section under the 'Code' tab. Then go the the 'Game' tab and press a button. If you wrote correct code for making your character perform some action it should be performed. To help you start writing code I've provided some pre-made code snippets in the section underneath the text area in the 'Code' tab. To use them simply click on the part of the text area where you want the pre-written code placed, then press the 'paste me' button underneath the code snippet you want to use a that point. You should also mouse over the code snippets to read a detailed description of what they do. Note that your code is saved automatically, though your game progress is not: the former is much more imortant than the latter!
 <br><br>
 You can look at different parts of the current level while playing by clicking and dragging the play area left or right. Also, there is a secondary coding area underneath the play-area - you can code there if you don't want to click away from the play-area, but the main code-tab has the pre-written code snippets.
+<br><br>
+Before editing your code you should press p to pause the game. You can tell the game is paused as it will say so in the top left hand side of the navbar. This prevents your keypresses when typing characters from executing code. When you are finished editing, press p again and code will immediately start being executed.
 <h3 id="S3">Coding Basics</h3>
 
 JSRogue is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
@@ -517,7 +523,7 @@ var firstEnemy = enemies[0]
 <br>
 In this first line we call the method lookForEnemies, which returns an array containing references to all the enemies, which we store in the variable 'enemies'. All arrays have a length attribute, so we can check if we've seen an enemy by checking if the length of the array stored in 'enemies' is greater than 0, which is what we do between the brackets after the 'if'. If that is true, then, as pointed out above, the code between the curly brackets will be executed. In that case we will likely want to do something to one of the enemies we seen, so we get a reference to the first enemy seen and store it in 'firstEnemy'. We do this by accessing the first object in enemies, which we do by placing square brackets after the 'enemies' variable, enclosing the position of its first element. Positions are counted from 0, so to get the first element we put 0 between the square brackets.
 
-Though it is not included in the example, at that point we could use the variable 'firstEnemy' to do something to the first enemy we seen. We could pass it as a parameter to a method which makes the player character step towards the enemy, or shoot an arrow at it, for instance.
+Though it is not included in the example, at that point we could use the variable 'firstEnemy' to do something to the first enemy we seen. We could pass it as a parameter to a method which makes the player character step towards the enemy, or shoot an arrow at it, for instance. Consulting the help on the code snippets for shooting looking for things explains this further.
 <br>
 <h3 id="S7">The 'Directions' array</h3>
 A premade array is provided for you to use in the form of the 'Directions' object, referred to as Game.directions. This is best used with repeatedely performing an action which takes a direction as input, but where you don't want to repeat the code with different direction parameters. The example in the next section illustrates this.
@@ -572,7 +578,7 @@ The code between the curly braces in this example will be executed until the sta
 <br>
 Note: You can can only perform one of the following actions a turn: moving, physically attacking an enemy, raising your shield. Firing arrows, quaffing potions, looking for enemies and so on can be performed as many times as you wish.
 <br><br>
-Even more important note: You melee attack enemies by moving into them. Therefore very method which makes you move can also make you attack.
+Even more important note: You melee attack enemies by moving into them. Therefore every method which makes you move can also make you attack.
 <br><br>
 <h5>this.goTo()</h5>
 Function: This will move you towards an enemy or item passed as parameter.It will return the value true once you are on the same square as the object passed as parameter.
@@ -626,17 +632,17 @@ Function: This attempts to move one step in a direction supplied as a parameter.
 Parameters: A direction taken from the Game.directions object, or supplied directly as one of: 'N','NE','E','SE','S','SW','W','NW'. Remember to use the speech marks if supplying the direction directly.
 <br><br>
 <h5>this.pickUp()</h5>
-Function: This picks up any item lying on the ground. If the item is worse than one you already own, you will leave it.
+Function: This picks up any item lying on the ground on the same square as you. If the item is worse than one you already own, you will leave it.
 <br><br>
 Parameters: None.
 <br><br>
 <h5>this.lookForEnemies()</h5>
-Function: This returns an array containing references to all enemies you've seen.
+Function: This returns an array containing references to all enemies you've seen. See above for how to access members of this array and how tp assign them to vairables. It is neccessary to do this so that functions such as this.goTo can have parameters given to them in the form of variables assigned values from the array this method returns.
 <br><br>
 Parameters: You can supply an optional parameter consisting of the name of the type of enemy you want to look for. For instance, if this.lookForEnemies('Feral Dog') was executed, all enemies which were not Feral Dogs would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
 <h5>this.lookForItems()</h5>
-Function: This returns an array containing references to all items you've seen.
+Function: This returns an array containing references to all items you've seen. It is neccessary to do this so that functions such as this.goTo can have parameters given to them in the form of variables assigned values from the array this method returns.
 <br><br>
 Parameters: You can supply an optional parameter consisting of the name of the type of item you want to look for. For instance, if this.lookForEnemies('Potions') was executed, all items which were not Potions would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
@@ -777,8 +783,9 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 <br>
 <h3 id="S13">Tips</h3>
 <ul>
-<li>Build your code incrementally. That way, if you make a mistake and your code no-longer runs, you know the problem is with the last piece if code you wrote. Don't try to write all the behaviour for your character at once - you don't need to.</li>
-<li>If you want to stop code from executing while you type, simply type a line of gibberish to induce an error in the code, and delete it when you wnt to execute the code again.</li>
+<li>It can be very fiddly to move aroung the map using the this.step directly. Most of the time its better to use the this.exploreMap function, as it takes less effort. The step function is very useful for dodging if you're about to be hit by a minotaur, though, or sneaking up on or past enemies!</li>
+<li>Build your code incrementally. That way, if you make a mistake and your code no-longer runs, you know the problem is with the last piece of code you wrote. Don't try to write all the behaviour for your character at once - you don't need to.</li>
+<li>Remember to pause the game while you edit your code by pressing p, otherwise you will keep moving as you type. Press p again to unpause the game.</li>
 <li>Remeber to use speech marks to encolse the name of an object or direction you want to  use as a parameter, and to use the correct case. Variables, on the other hand, aren't enclosed in speechmarks.</li>
 <li>Use double backspaces in your code - // - to preface comments. The game won't attempt to execute these, so you can use them to write handy notes. Or to temporarily negate lines of code you don't want to delete.</li>
 <li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to a, whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
@@ -790,27 +797,28 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 
 </div>
 
-<!--adapted slightly from http://jsfiddle.net/NaHTw/4/-->
+
 <script>
 $(function() {
+<!-- this function adapted slightly from http://jsfiddle.net/NaHTw/4/-->
   $("a.btn").click(function() {
     var inputArea = $("#inputArea");
     var caretPos = document.getElementById("inputArea").selectionStart;
     var textAreaTxt = $("#inputArea").val();
-    var txtToAdd = $(this).prev().html(); 
+    var txtToAdd = $(this).prev().text(); 
     $("#inputArea").val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
+    $('#auxArea').val($("#inputArea").val());
   });
 });
-$(function() {
-$('#inputArea').change(function(){
+
+$('#inputArea').bind('keypress keyup blur', function() {
     var theCode = $(this).val();
     $.get('/save_code/', {code: theCode});
-});
-});
-$('#inputArea').bind('keypress keyup blur', function() {
     $('#auxArea').val($(this).val());
 });
 $('#auxArea').bind('keypress keyup blur', function() {
+    var theCode = $(this).val();
+    $.get('/save_code/', {code: theCode});
     $('#inputArea').val($(this).val());
 });
  $(function() {
