@@ -34,6 +34,7 @@ pre {white-space: pre;}
         <script src="{% static 'js/directions.js' %}"></script>
         <script src="{% static 'js/imageMap.js' %}"></script>
         <script src="{% static 'js/keys.js' %}"></script>
+        <script src="{% static 'js/start.js' %}"></script>
        
         
 {% endblock %}
@@ -425,7 +426,6 @@ Its a good idea to drink some potions when your health dips too low. Remember, y
 <li><a href="#S8">'For' Loops</a></li>
 <li><a href="#S9">'While' Loops</a></li>
 <li><a href="#S10">Method List</a></li>
-<li><a href="#S11">Attribute List</a></li>
 <li><a href="#S12">Object List</a></li>
 <li><a href="#S13">Tips</a></li>
 </ol>
@@ -561,12 +561,12 @@ Before the first semicolon in the brackets after the 'for' we define a variable 
 <h3 id="S9">'While' Loops</h3>
 'While' loops are similar to 'for' loops in that they can be used to execute a section of code repeatedely. Specifically, they can be used to execute a section of code until a pre-defined condition is met. Consider the following example:
 <br><br>
-<pre>while (this.currHealth<500)
+<pre>while (this.countHealth()<500)
 {
 this.drinkPotion()
 }
 </pre>
-The code between the curly braces in this example will be executed until the statement 'this.currHealth<500' stops being true: that is, until the players current health exceeds 499.
+The code between the curly braces in this example will be executed until the statement 'this.countHealth()<500' stops being true: that is, until the players current health exceeds 499.
 <br><br>
 <h3 id="S10">Method List</h3>
 <br>
@@ -632,18 +632,23 @@ Function: This returns an array containing references to all items you've seen.
 <br><br>
 Parameters: You can supply an optional parameter consisting of the name of the type of item you want to look for. For instance, if this.lookForEnemies('Potions') was executed, all items which were not Potions would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
+<h5>this.countPotions()</h5>
+Function: This returns a the amount of potions you have.
+<br><br>
+Parameters: None
+<br><br>
+<h5>this.countArrows()</h5>
+Function: This returns a the amount of Arrows you have.
+<br><br>
+Parameters: None
+<br><br>
+<h5>this.countHealth()</h5>
+Function: This returns a the amount of health you have.
+<br><br>
+Parameters: None
+<br><br>
 
-<h3 id="S11">Attribute List</h3>
-<br>
-<h5>this.currHealth</h5>
-Is a number correspending to you character's current amount of health points.
-<br><br>
-<h5>this.Potions</h5>
-Is a number correspending to you character's current amount of Potions.
-<br><br>
-<h5>this.Arrows</h5>
-Is a number correspending to you character's current amount of Arrows.
-<br><br>
+
 <h3 id="S12">Object List</h3>
 <br>
 Note: If you want to us the name of one of these objects as a parameter to a method call, make sure to use their name specified here, preserving speechmarks and case.
@@ -768,7 +773,8 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 <li>If you want to stop code from executing while you type, simply type a line of gibberish to induce an error in the code, and delete it when you wnt to execute the code again.</li>
 <li>Remeber to use speech marks to encolse the name of an object or direction you want to  use as a parameter, and to use the correct case. Variables, on the other hand, aren't enclosed in speechmarks.</li>
 <li>Use double backspaces in your code - // - to preface comments. The game won't attempt to execute these, so you can use them to write handy notes. Or to temporarily negate lines of code you don't want to delete.</li>
-<li>Play around with the code! The game is deliberately farely short, so you don't lose to much progress if you die because of this</li>
+<li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to 'a', whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
+<li>Play around with the code! The game is deliberately farely short, so you don't lose to much progress if you die because of this.</li>
 <li>Have Fun!</li>
 </ul>
 </div>

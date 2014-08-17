@@ -229,6 +229,9 @@ var Map = {
         }
         return clear;
     },
+    setLevel: function(number) {
+	this._level=number;
+    },
     getCoordTiles: function(key) {
         var ents = this.entities[key];
         var entityTiles = []
@@ -256,7 +259,8 @@ var Map = {
     },
     sortRooms: function() {
         var rooms = this._grid.getRooms();
-        var x = rooms[0].getLeft(), y = rooms[0].getTop();
+        var center = rooms[0].getCenter();
+        var x = center[0], y = center[1];
         var level = Game.Levels[this._level++];
       
         for (var i = 1; i < rooms.length-1; i++) {
@@ -287,30 +291,6 @@ var Map = {
         this._player.drawFOV();
         Game.setPlayer(this._player);
     }
-}
-
-
-window.onload = function() {
-    Game.init();
-    var playField = Game.getDisplay().getContainer()
-    $('#gameArea').append(playField);
-    //
-    $('#gameArea').dragscrollable();
-    $('#gameArea').slimScroll({width: '95%',
-        height: '20%'})
-    //
-    var messageField = Game.getTextDisplay().getContainer()
-    $('#messages').append(messageField);
-    $('#messages').slimScroll({
-        height: '200px'
-    });
-    var statusField = Game.getStatDisplay().getContainer()
-    $('#status').append(statusField);
-
-    Map.generateMap();
-
-    Map.getEngine().start();
-    console.log(ROT.RNG.getSeed());
 }
 
 

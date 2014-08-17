@@ -18,6 +18,8 @@ def save_code(request):
     profile.save()
     return HttpResponse()
 
+def test(request):
+    return render_to_response('test.html')
 
 @login_required
 def index(request):

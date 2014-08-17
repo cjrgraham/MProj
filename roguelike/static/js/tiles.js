@@ -292,7 +292,7 @@ Game.Mixins.Actor_Mixins.arrowStrike = {
         }
         if (this["_Bow"])
         {
-            att += this["_Bow"]["_Bonus"]
+            att += parseInt(this["_Bow"]["_Bonus"])
         }
         Game.queMessage("The " + this._name +
                 " shoots an arrow and wounds the " + " " + targetObj._name + ".");
@@ -350,10 +350,7 @@ Game.Mixins.Actor_Mixins.getsStruck = {
             dam = (att - this["_Shield"]["_Bonus"]);
         else
             dam = att;
-        if (this._hasWeapon)
-        {
-            dam += this.getWeaponDamage();
-        }
+
         this.currHealth = Math.max(0, this.currHealth - dam)
         //check if dead
         if (this.currHealth <= 0)
@@ -404,9 +401,9 @@ Game.Mixins.Actor_Mixins.enemyDies = {
         // remove from  map
         delete ents[this._category + ''];
         // remove target, if one exists
-        delete Map.entities[this._targetKey]['Target']
+        if(Map.entities[this._targetKey])
+        	delete Map.entities[this._targetKey]['Target']
         ents['Corpse'] = new Game.Entity({template: Game.Templates.CorpseTemplates.Corpse});
-        //Map.generateMap();
     }
 }
 
@@ -627,6 +624,15 @@ Game.Mixins.Actor_Mixins.Player = {
                 return true;
             return Map.isClear(x + ',' + y, that.checkObstruction);
         });
+    },
+    countPotions: function() {
+        return this.Potions;
+    },
+    countArrows: function() {
+        return this.Arrows;
+    },
+    countHealth: function() {
+        return this.currHealth;
     },
     exploreMap: function() {
         if (!(this._targetRoom < this._roomCenters.length))
