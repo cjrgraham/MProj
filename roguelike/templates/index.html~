@@ -637,12 +637,12 @@ Function: This picks up any item lying on the ground on the same square as you. 
 Parameters: None.
 <br><br>
 <h5>this.lookForEnemies()</h5>
-Function: This returns an array containing references to all enemies you've seen.
+Function: This returns an array containing references to all enemies you've seen. See above for how to access members of this array and how tp assign them to vairables. It is neccessary to do this so that functions such as this.goTo can have parameters given to them in the form of variables assigned values from the array this method returns.
 <br><br>
 Parameters: You can supply an optional parameter consisting of the name of the type of enemy you want to look for. For instance, if this.lookForEnemies('Feral Dog') was executed, all enemies which were not Feral Dogs would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
 <h5>this.lookForItems()</h5>
-Function: This returns an array containing references to all items you've seen.
+Function: This returns an array containing references to all items you've seen. It is neccessary to do this so that functions such as this.goTo can have parameters given to them in the form of variables assigned values from the array this method returns.
 <br><br>
 Parameters: You can supply an optional parameter consisting of the name of the type of item you want to look for. For instance, if this.lookForEnemies('Potions') was executed, all items which were not Potions would be absent from the returned array. Remember to preserve the case and speech marks.
 <br><br>
