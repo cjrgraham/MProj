@@ -798,7 +798,7 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     },
     handleEvent: function(e) {
-          if(e.keyCode==80)
+          if(e.keyCode==27)
           {
            if(this._paused)
              {

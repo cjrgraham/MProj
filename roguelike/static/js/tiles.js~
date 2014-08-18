@@ -798,12 +798,12 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     },
     handleEvent: function(e) {
-          if(e.keyCode==80)
+          if(e.keyCode==13)
           {
-           Game.queMessage("Paused!")
            if(this._paused)
              {
               this._paused=false
+              $(".brand").html("JSRogue");
              }
            else
              {
