@@ -122,10 +122,10 @@ How to Use it:
 -------------------------
 Use it to check if you can see an enemy! If you do, you should probably attack him. To do so, put a second line inside the braces where you use the 'goTo' instruction to advance on the selected 'firstEnemy'. Or for a ranged attack, use the 'shootArrowAt' auxiliary action.
 ">
-var enemies = this.lookForEnemies();
+var enemies = this.lookForEnemies()
 if(enemies.length>0)
 {
-var firstEnemy = enemies[0];
+var firstEnemy = enemies[0]
 }
 </pre>
               <a class="btn" href="#">Paste me! </a>
@@ -200,10 +200,10 @@ Use it to check if you can see an item! If you do, you should probably go to it 
 
 PS - Items you've already tried to pick up will be ignored by this code.
 ">
-var items = this.lookForItems();
+var items = this.lookForItems()
 if(items.length>0)
 {
-var firstItem = items[0];
+var firstItem = items[0]
 }
 
 </pre>
@@ -227,7 +227,7 @@ How to Use it:
 
 If you use this, its a good idea to put dodging instructions inside the braces. If you're about to be hit, but you move places, the enemy will miss you.
 ">
-var strikeCheck = this.watchForStrike();
+var strikeCheck = this.watchForStrike()
 
 if(strikeCheck)
 {
@@ -258,7 +258,7 @@ How to Use it:
 
 Useful to check if you have a mithril shield when archers are near. Supply the name of the item you want to check you have from the list in the Guide. Remember to preserve its case and enclose it in speech marks.
 ">
-var itemOwned = this.checkInventoryForItem();
+var itemOwned = this.checkInventoryForItem()
 
 if(itemOwned)
 {
@@ -309,7 +309,7 @@ How to Use it:
 -------------------------
 Use it to move round about the level. You probably want to check whether its safe to explore first, though.
 ">
-this.exploreMap();
+this.exploreMap()
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -327,7 +327,7 @@ How to Use it:
 
 Get a reference to an item or object by looking for them and assigning them to a variable using a var statement, then place that variable between the braces in the code. You wil then step towards it - if it is an enemy, you will eventually bump into and attack it. If is an item, you can check whether you are on top of it by checking if 'arrived' is true, in which case you can try to pick it up.
 ">
-var arrived = this.goTo();
+var arrived = this.goTo()
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -347,7 +347,7 @@ How to Use it:
 
 Usefull to use if archers are shooting at you and you have a mithril shield.
 ">
-this.raiseShield();
+this.raiseShield()
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -366,7 +366,7 @@ How to Use it:
 
 Use it to go to the next level when you are ready.
 ">
-this.descendSpottedStairs();
+this.descendSpottedStairs()
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -392,7 +392,7 @@ Use it to pick up items! They can be quite useful..
 
 Of course, you need to check if you are standing over an item first.
 ">
-this.pickUp();
+this.pickUp()
 
 
 
@@ -417,7 +417,7 @@ How to Use it:
 
 Use it to shoot an enemy from far away, and multiple times in the one turn! Of course, you need arrows for this.
 ">
-this.shootArrowAt();
+this.shootArrowAt()
 
 
 

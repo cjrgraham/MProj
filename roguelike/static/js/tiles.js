@@ -865,7 +865,7 @@ Game.Mixins.Actor_Mixins.Player = {
             this._hasDrank=true;
         }
     },
-    checkInventoryForItem: function (itemName) {
+    checkForItem: function (itemName) {
         if ((this._Bow._name===itemName)||(this._Shield._name===itemName)||(this._Sword._name===itemName))
 		return true
         else
