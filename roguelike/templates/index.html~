@@ -238,6 +238,37 @@ if(strikeCheck)
               <a class="btn" href="#">Paste me! </a>
 
             </div><!--/span-->
+            <div class="span4">
+
+              <h3>Check Inventory</h3>
+
+            
+
+<pre title="-------------------------
+What it does: 
+-------------------------
+
+The first line of this code will make you check whether you currently have a named sword, shield or bow, and stores true in 'itemOwned' if you have the item, and false otherwise. The 'if (itemOwned)' line checks whther itemOwned has a value of true. If it does (so if you do have the named item), it will execute the code inside the curly braces and continue. Otherwise, it will ignore the code inside the curly braces and continue.
+
+Remember, you need to modify this by adding the name of the item you want to check you have!
+-------------------------
+How to Use it:
+
+-------------------------
+
+Useful to check if you have a mithril shield when archers are near. Supply the name of the item you want to check you have from the list in the Guide. Remember to preserve its case and enclose it in speech marks.
+">
+var itemOwned = this.checkInventoryForItem();
+
+if(itemOwned)
+{
+
+}
+</pre>
+
+              <a class="btn" href="#">Paste me! </a>
+
+            </div><!--/span-->
 </div><!--/row-->
 </div>
 <h3>Main Actions</h3>
@@ -362,6 +393,9 @@ Use it to pick up items! They can be quite useful..
 Of course, you need to check if you are standing over an item first.
 ">
 this.pickUp();
+
+
+
 </pre>
               <a class="btn" href="#">Paste me! </a>
             </div><!--/span-->
@@ -384,6 +418,9 @@ How to Use it:
 Use it to shoot an enemy from far away, and multiple times in the one turn! Of course, you need arrows for this.
 ">
 this.shootArrowAt();
+
+
+
 </pre>
 
               <a class="btn" href="#">Paste me! </a>
@@ -446,7 +483,7 @@ Playing the game involves writing code in the Text-Area of the code section unde
 <br><br>
 You can look at different parts of the current level while playing by clicking and dragging the play area left or right. Also, there is a secondary coding area underneath the play-area - you can code there if you don't want to click away from the play-area, but the main code-tab has the pre-written code snippets.
 <br><br>
-Before editing your code you should press p to pause the game. You can tell the game is paused as it will say so in the top left hand side of the navbar. This prevents your keypresses when typing characters from executing code. When you are finished editing, press p again and code will immediately start being executed.
+Before editing your code you should press esc to pause the game. You can tell the game is paused as it will say so in the top left hand side of the navbar. This prevents your keypresses when typing characters from executing code. When you are finished editing, press esc again and code will immediately start being executed.
 <h3 id="S3">Coding Basics</h3>
 
 JSRogue is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
@@ -661,6 +698,11 @@ Function: This returns the amount of health you have.
 <br><br>
 Parameters: None
 <br><br>
+<h5>this.checkInventoryForItem()</h5>
+Function: This returns true if you have the named type of sword, shield or bow supplied as parameter; false otherwise.
+<br><br>
+Parameters: The name of the sword, shield or bow you want to check you have supplied in speech marks, e.g., 'Mithril Shield'.
+<br><br>
 
 
 <h3 id="S12">Object List</h3>
@@ -785,7 +827,7 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 <ul>
 <li>It can be very fiddly to move aroung the map using the this.step directly. Most of the time its better to use the this.exploreMap function, as it takes less effort. The step function is very useful for dodging if you're about to be hit by a minotaur, though, or sneaking up on or past enemies!</li>
 <li>Build your code incrementally. That way, if you make a mistake and your code no-longer runs, you know the problem is with the last piece of code you wrote. Don't try to write all the behaviour for your character at once - you don't need to.</li>
-<li>Remember to pause the game while you edit your code by pressing p, otherwise you will keep moving as you type. Press p again to unpause the game.</li>
+<li>Remember to pause the game while you edit your code by pressing esc, otherwise you will keep moving as you type. Press esc again to unpause the game.</li>
 <li>Remeber to use speech marks to encolse the name of an object or direction you want to  use as a parameter, and to use the correct case. Variables, on the other hand, aren't enclosed in speechmarks.</li>
 <li>Use double backspaces in your code - // - to preface comments. The game won't attempt to execute these, so you can use them to write handy notes. Or to temporarily negate lines of code you don't want to delete.</li>
 <li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to a, whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
