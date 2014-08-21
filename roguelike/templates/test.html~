@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>QUnit Example</title>
+  <title>JSRogue Qunit Tests</title>
       <link href="{% static 'css/qunit-1.14.0.css' %}" rel="stylesheet">
 </head>
 <body>

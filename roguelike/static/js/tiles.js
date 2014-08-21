@@ -803,12 +803,12 @@ Game.Mixins.Actor_Mixins.Player = {
            if(this._paused)
              {
               this._paused=false
-              $(".brand").html("JSRogue");
+              $(".brand").html("CodeQuest");
              }
            else
              {
               this._paused=true
-               $(".brand").html("JSRogue: Paused");
+               $(".brand").html("CodeQuest: Paused");
              }
           }
         var text

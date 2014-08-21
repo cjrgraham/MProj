@@ -258,7 +258,7 @@ How to Use it:
 
 Useful to check if you have a mithril shield when archers are near. Supply the name of the item you want to check you have from the list in the Guide. Remember to preserve its case and enclose it in speech marks.
 ">
-var itemOwned = this.checkInventoryForItem()
+var itemOwned = this.checkForItem()
 
 if(itemOwned)
 {
@@ -698,7 +698,7 @@ Function: This returns the amount of health you have.
 <br><br>
 Parameters: None
 <br><br>
-<h5>this.checkInventoryForItem()</h5>
+<h5>this.checkForItem()</h5>
 Function: This returns true if you have the named type of sword, shield or bow supplied as parameter; false otherwise.
 <br><br>
 Parameters: The name of the sword, shield or bow you want to check you have supplied in speech marks, e.g., 'Mithril Shield'.
