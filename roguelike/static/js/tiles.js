@@ -812,7 +812,6 @@ Game.Mixins.Actor_Mixins.Player = {
              }
           }
         var text
-        setTimeout(function(){timer=true}, 3000);
         if (this._paused)
            text="Stop the Game"
         else 
