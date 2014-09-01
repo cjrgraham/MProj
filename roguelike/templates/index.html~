@@ -472,11 +472,10 @@ this.drinkPotion()
 </ol>
 <br>
 <h3 id="S1">Introduction</h3>
-Welcome to JSRogue! This is a roguelike game where your objective is to descend to the bottom of the dungeon and steal a chest of treasure. 
+Welcome to CodeQuest! This is a roguelike game where your objective is to descend to the bottom of the dungeon and steal a chest of treasure. 
 Many enemies will try to cut your quest short, but fortunately the dungeon is scattered with items you can use to help you on your way. 
 <br><br>
-The unique aspect of JSRogue is that you don't control your character by pressing keys or clicking the mouse - you write javascript code which
-then controls your character! Hopefully the game serves as a fun way for you to learn some javascript and fundamental programming concepts. Before playing the game, you should read the rest of this guide so you can start writing some code.
+The unique aspect of CodeQuest is that you don't control your character by pressing keys or clicking the mouse - you write javascript code which then controls your character! Hopefully the game serves as a fun way for you to learn some javascript and fundamental programming concepts. Before playing the game, you should read the rest of this guide so you can start writing some code.
 
 <h3 id="S2">Game Basics</h3>
 Playing the game involves writing code in the Text-Area of the code section under the 'Code' tab. Then go the the 'Game' tab and press a button. If you wrote correct code for making your character perform some action it should be performed. To help you start writing code I've provided some pre-made code snippets in the section underneath the text area in the 'Code' tab. To use them simply click on the part of the text area where you want the pre-written code placed, then press the 'paste me' button underneath the code snippet you want to use a that point. You should also mouse over the code snippets to read a detailed description of what they do. Note that your code is saved automatically, though your game progress is not: the former is much more imortant than the latter!
@@ -486,7 +485,7 @@ You can look at different parts of the current level while playing by clicking a
 Before editing your code you should press esc to pause the game. You can tell the game is paused as it will say so in the top left hand side of the navbar. This prevents your keypresses when typing characters from executing code. When you are finished editing, press esc again and code will immediately start being executed.
 <h3 id="S3">Coding Basics</h3>
 
-JSRogue is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
+CodeQuest is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
 code you've entered into the text area will be executed, starting from the top and ending at the bottom.
 <br><br>
 But how do you write this code? As a simple example, consider the following code-snippet which maker your character move one step north:
@@ -580,7 +579,7 @@ The purpose of the outer 'for' statement followed by brackets and outer curly br
 <br><br>
 Note: The use of the variable name 'direction' is arbritrary - we could just as well have written 'for (blah in Game.directions)' instead, and use 'blah' as a variable.
 <br><br>
-Also, you can use the <b>'break'</b> keyword to leave a loop early, although doing so is rarely useful in JSRogue. In the following example:
+Also, you can use the <b>'break'</b> keyword to leave a loop early, although doing so is rarely useful in CodeQuest. In the following example:
 <pre>for (direction in Game.directions)
 {
 if (this.canMove(direction))

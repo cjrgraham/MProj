@@ -812,11 +812,14 @@ Game.Mixins.Actor_Mixins.Player = {
              }
           }
         var text
+        "var timer = 0;"
+        setTimeout(function(){timer=true}, 3000);
         if (this._paused)
            text="Stop the Game"
-        else
+        else 
            text= $('#inputArea').val();
-        eval(text);
+        var cleanText = "var timer = 0;"+text.replace("{","{timer++;if (timer>100000)return;")
+        eval(cleanText);         
         this._imminentStrike = false;
         window.removeEventListener("keydown", this);
         Map.getEngine().unlock();
