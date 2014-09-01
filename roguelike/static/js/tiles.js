@@ -816,7 +816,7 @@ Game.Mixins.Actor_Mixins.Player = {
            text="Stop the Game"
         else 
            text= $('#inputArea').val();
-        var cleanText = "var timer = 0;"+text.replace("{","{timer++;if (timer>100000)return;")
+        var cleanText = "var timer = 0;"+text.replace("{","{timer++;if (timer>100000)break;")
         eval(cleanText);         
         this._imminentStrike = false;
         window.removeEventListener("keydown", this);
