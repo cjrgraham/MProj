@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block head_block %}
-
+   
     <link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/jquery-ui.theme.min.css' %}" rel="stylesheet">
 <style>
@@ -12,7 +12,6 @@ pre {white-space: pre;}
 	<script type="text/javascript">
      DJANGO_STATIC_URL = '{{ STATIC_URL }}';
 </script>
-
     <script src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
     <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
     <script src="{% static 'js/jquery.slimscrollHorizontal.min.js' %}"></script>
@@ -35,11 +34,11 @@ pre {white-space: pre;}
         <script src="{% static 'js/imageMap.js' %}"></script>
         <script src="{% static 'js/keys.js' %}"></script>
         <script src="{% static 'js/start.js' %}"></script>
-        <script src="{% static 'js/eval.js' %}"></script>
         
 {% endblock %}
 
 {% block body_block %}
+
 <div id="tabs">
 <ul>
 <li><a href="#tabs-1"><span>Game</span></a></li>
@@ -72,7 +71,7 @@ pre {white-space: pre;}
 <h2>Your Code</h2>
 
 
-                                      <textarea rows="15" style="width:90%" id="auxArea">
+                                      <textarea class="lined" rows="15" style="width:90%" id="auxArea">
 {{ theCode }}            
                         </textarea> 
           </div>
@@ -90,7 +89,7 @@ pre {white-space: pre;}
 <h2>Get Coding!</h2>
 
 </div>
-                                      <textarea rows="15" style="width:90%" id ="inputArea">
+                                      <textarea class="lined" rows="15" style="width:90%" id ="inputArea">
 {{ theCode }}            
                         </textarea> 
           </div>
@@ -841,6 +840,10 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 
 <script>
 $(function() {
+	$(".lined").linedtextarea(
+		{selectedLine: 1}
+	);
+
 <!-- this function adapted slightly from http://jsfiddle.net/NaHTw/4/-->
   $("a.btn").click(function() {
     var inputArea = $("#inputArea");
@@ -866,6 +869,22 @@ $('#auxArea').bind('keypress keyup blur', function() {
 $( "#accordion" ).accordion({heightStyle: "content"});
 });
 $( "#tabs" ).tabs();
+window.onerror = function(message, url, line) {
+        var textDisplay = Game.getTextDisplay()
+        var code = $('#inputArea').val().split("\n");
+        var codeErrorLine = code[line-1]
+ 	textDisplay.clear();
+        if (Game.codeExecuted){
+        if (codeErrorLine)
+        {
+        textDisplay.drawText(1, 1, '%c{white}Coding mistake: %c{red} ' + message + ' %c{white} at line: '+ line +',containing %c{red}' + codeErrorLine, 23);
+	}
+        else
+        {
+                 textDisplay.drawText(1, 1, '%c{white}Coding mistake: %c{red}'+'Cannot trace error (error finding is not fully developed yet, sorry!)', 23);
+        }
+}
+}
 </script>
 {% endblock %}
 

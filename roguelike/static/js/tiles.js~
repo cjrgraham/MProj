@@ -798,11 +798,16 @@ Game.Mixins.Actor_Mixins.Player = {
         }
     },
     handleEvent: function(e) {
+          // Only display error if we try to execute code
+          Game.codeExecuted=false;
+          // Don't execute code if we've just unpaused
+          var justUnpaused=false
           if(e.keyCode==27)
           {
            if(this._paused)
              {
-              this._paused=false
+              this._paused=false;
+              justUnpaused=true;
               $(".brand").html("CodeQuest");
              }
            else
@@ -812,12 +817,14 @@ Game.Mixins.Actor_Mixins.Player = {
              }
           }
         var text
-        if (this._paused)
+        if (this._paused||justUnpaused)
            text="Stop the Game"
-        else 
+        else {
            text= $('#inputArea').val();
-        var cleanText = "var timer = 0;"+text.replace("{","{if (timer++>100000)throw 'Code is taking too long - edit it.'")
-        eval(cleanText);         
+           text = "var timer = 0;"+text.replace(/{/g,"{timer++;if (timer>100000)throw ' - Code is taking too long to execute - modify for or while loop before identified brace -';")
+           Game.codeExecuted=true
+           }
+        eval(text);         
         this._imminentStrike = false;
         window.removeEventListener("keydown", this);
         Map.getEngine().unlock();
