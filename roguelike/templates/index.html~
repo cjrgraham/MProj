@@ -482,6 +482,10 @@ Playing the game involves writing code in the Text-Area of the code section unde
 You can look at different parts of the current level while playing by clicking and dragging the play area left or right. Also, there is a secondary coding area underneath the play-area - you can code there if you don't want to click away from the play-area, but the main code-tab has the pre-written code snippets.
 <br><br>
 Before editing your code you should press esc to pause the game. You can tell the game is paused as it will say so in the top left hand side of the navbar. This prevents your keypresses when typing characters from executing code. When you are finished editing, press esc again and code will immediately start being executed.
+
+<br><br>
+Note: There is some minimal error tracing in the game in browsers other than firefox, and this appears in the messages-area of the game tab. It is not fully implemented yet - it can be useful, but may not work in all cases.
+<br><br>
 <h3 id="S3">Coding Basics</h3>
 
 CodeQuest is turn based, and each time you perform an action by pressing any key on the game page after writing correct code, all the lines of 
@@ -829,6 +833,7 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 <li>Remeber to use speech marks to encolse the name of an object or direction you want to  use as a parameter, and to use the correct case. Variables, on the other hand, aren't enclosed in speechmarks.</li>
 <li>Use double backspaces in your code - // - to preface comments. The game won't attempt to execute these, so you can use them to write handy notes. Or to temporarily negate lines of code you don't want to delete.</li>
 <li>Don't assign new values to any pre-defined objects or methods, such as Game, Game.directions, this.step etc., as then you will no longer be able to use them as intended and will have to start the game again to do so! Remember, 'a=1' is used to <i>assign</i> the value 1 to a, whereas 'a===1' is used not to assign a value, but rather to <i>check</i> that the value of 'a' is 1.</li>
+<li>Using the messages screen to trace errors can be helpfull, but it is not fully implemented yet.</li>
 <li>Play around with the code! The game is deliberately fairly short, so you don't lose to much progress if you die because of this.</li>
 <li>Have Fun!</li>
 </ul>
@@ -848,7 +853,7 @@ $(function() {
   $("a.btn").click(function() {
     var inputArea = $("#inputArea");
     var caretPos = document.getElementById("inputArea").selectionStart;
-    var textAreaTxt = $("#inputArea").val();
+    var textAreaTxt = $("#inputArea").text();
     var txtToAdd = $(this).prev().text(); 
     $("#inputArea").val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
     $('#auxArea').val($("#inputArea").val());

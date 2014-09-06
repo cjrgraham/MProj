@@ -845,15 +845,11 @@ This is the strongest enemy you'll face in the game. Fortunately, it has a weakn
 
 <script>
 $(function() {
-	$(".lined").linedtextarea(
-		{selectedLine: 1}
-	);
-
 <!-- this function adapted slightly from http://jsfiddle.net/NaHTw/4/-->
   $("a.btn").click(function() {
     var inputArea = $("#inputArea");
     var caretPos = document.getElementById("inputArea").selectionStart;
-    var textAreaTxt = $("#inputArea").val();
+    var textAreaTxt = $("#inputArea").text();
     var txtToAdd = $(this).prev().text(); 
     $("#inputArea").val(textAreaTxt.substring(0, caretPos) + txtToAdd + textAreaTxt.substring(caretPos) );
     $('#auxArea').val($("#inputArea").val());
