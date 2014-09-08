@@ -59,7 +59,7 @@ Game.Mixins.Room_Mixins.hasPotions = {
 Game.Mixins.Room_Mixins.hasDog = {
     name: 'hasDog',
     init: function() {
-        placeEntity(this, Game.Templates.Item_Templates.Potions);
+        placeEntity(this, Game.Templates.ActorTemplates.DogTemplate);
     }
 }
 

@@ -1,9 +1,14 @@
+/*
+This file contains entity templates and the mixins they are built out of. Entities are Elements which are located at co-ordinates on the map, and can be accessed at co-ordinates in Map.entities.
+*/
+
 Game.Mixins = {};
 Game.Mixins.General_Mixins = {};
 
 Game.Mixins.General_Mixins.blocksSight = {
     name: 'blocksSight',
     groupName: 'General',
+    // init funcitons are called during the creation of entities: they are used to set them up
     init: function() {
         this._opacity = true;
     }
@@ -24,6 +29,7 @@ Game.Mixins.Tile_Mixins.Tile = {
     init: function(properties) {
         this._kind = properties['kind'];
     },
+    // Other methods in the mixin get copied over to the object created using a template containing this mixin.
     getType: function() {
         return this._kind;
     },
@@ -62,6 +68,9 @@ Game.Mixins.Tile_Mixins.WallTile = {
         for (var i = 0, j = arguments.length; i < j; i++)
             this._connections[arguments[i]] = true
     },
+    /*
+    This method is used to check if a wall at thscoord has a neighbour at nCoord. oDir is the direction nCoord is from thsCoord, and thsDir is 	   the direction thsCoord is from nCoord. If that condition holds, thsDir is added to nCoord's neighbour array, and oDir is added to thsCoord's neghbour array. The other cases handle wall tiles on the edge of the map.
+    */
     updateNeighbour: function(thsCoord, nCoord, oDir, thsDir) {
         var parts = thsCoord.split(",");
         if (Map.entities[nCoord] && Map.entities[nCoord]['Wall'])
@@ -230,6 +239,7 @@ Game.Mixins.Door_Mixins.Door = {
         this._obstructs = true;
         this._opacity = true;
     },
+    // When a door is opened it is no longer opaque or obstructs, and the player should be notified.
     open: function(entity) {
         this._obstructs = false;
         this._opacity = false;
@@ -253,30 +263,34 @@ Game.Templates.ActorTemplates = {};
 Game.Mixins.Actor_Mixins.normalStrike = {
     name: 'normalStrike',
     groupName: 'Actor',
+    // use this to attack
     strike: function(targetObj) {
-        var att = this._base_attack;
+        var att = this._base_attack; // get actor's inate attack stat
         if (this["_Sword"])
         {
-            att += parseInt(this["_Sword"]["_Bonus"])
+            att += parseInt(this["_Sword"]["_Bonus"]) // add its sword bonus
         }
         Game.queMessage("The " + this._name +
                 " hits the" + " " + targetObj._name + ".");
+        // if an enemy has been hit, make it turn round
         if (targetObj._category === 'Enemy') {
            targetObj._targetX=this.x_coord; 
            targetObj._targetY=this.y_coord;
            targetObj.turnToTarget(targetObj);
            targetObj.drawTarget();
-        }
+        } 
+        // hit enemy.
         targetObj.isStruck(att, this);
            if((this._name+'')==="Player")
            {
-	    this._hasAttacked=true;
+	    this._hasAttacked=true; // used to check if sound should be played
 	   }
     }
 },
 Game.Mixins.Actor_Mixins.arrowStrike = {
     name: 'arrowStrike',
     groupName: 'Actor',
+    // see the strike attack method above; very similar.
     arrowStrike: function(targetObj) {
         var att = this._arrow_attack;
         if (targetObj["_Shield"])
@@ -317,6 +331,7 @@ Game.Mixins.Actor_Mixins.clubStrike = {
     groupName: 'Actor',
     strike: function(targetObj) {
         var att = this._base_attack;
+        // Before this actor attacks, it must raise its club
         if (!this._clubRaisedAt)
         {
             Game.queMessage("The " + this._name +
@@ -325,6 +340,7 @@ Game.Mixins.Actor_Mixins.clubStrike = {
             Game.getPlayer().setImminentStrike(true);
             return;
         }
+        // if club is raised and actor is attacking, but playe has moved out the way - he has dodged!
         else if (Game.getPlayer().getCoord() !== this._clubRaisedAt)
         {
             Game.queMessage("The Player Dodged the " + this._name + "'s club!");
@@ -372,8 +388,10 @@ Game.Mixins.Actor_Mixins.Guards = {
     name: 'Guards',
     groupName: 'Actor',
     init: function() {
+        // delayer is used to control the actor's rotation when idle; should only rotate every 2nd turn.
         this._delayer = false;
     },
+    // actors should rotate when idle and at their home co-ordinates, which thet guard.
     idle: function() {
         if (this._delayer === false)
         {
@@ -434,25 +452,25 @@ Game.Mixins.Actor_Mixins.Player = {
     groupName: 'Actor',
     init: function() {
         this.a = 0
-        this._messageDisplay = Game.getTextDisplay();
+        this._messageDisplay = Game.getTextDisplay(); 
         this._statusDisplay = Game.getStatDisplay();
         this._messages = [],
                 Game.setPlayerMessages(this._messages);
-        this._imminentStrike = false;
+        this._imminentStrike = false; // used to track whether player is about to be hit
         this.setUpForFloor();
         Game.queMessage("Welcome! Write code and then press a key on this screen to control your character.")
     },
     setUpForFloor: function() {
-        Map.addToSchedule(this);
+        Map.addToSchedule(this); // Maked sure player gets their turns
         var that = this;
         var fovCallback = function(x, y) {
             if (Map.isClear(x + ',' + y, that.getOpacity))
                 return true;
             return false;
-        };
+        }; // callback used to calculate field of view: can't see through tile if it contains an opaque tile
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
-        this._visible = {};
-        this._roomCenters = [];
+        this._visible = {}; // tracks all visible co-ordinates.
+        this._roomCenters = []; // need to keep track of room centers as they are used by this.explore*(
         var rooms = Map.getGrid().getRooms();
         for (var i = 0; i < rooms.length; i++) {
             var center =rooms[i].getCenter();
@@ -462,6 +480,7 @@ Game.Mixins.Actor_Mixins.Player = {
         this._targetRoom = 0;
         this._seenStairCoord = null;
     },
+    // Getting an item just updates the player's stats and removes it from the map.
     getsbonusItem: function(name, itemType, level, bonusAmount) {
         if (this['_' + itemType])
         {
@@ -508,17 +527,17 @@ Game.Mixins.Actor_Mixins.Player = {
             var ents = Map.getEntities();
             var Path = new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
                 return ents[x + ',' + y]['Floor'];
-            });
-            var steps = [];
+            });// Path to stairs.
+            var steps = []; // array of steps in the path
             Path.compute(this.x_coord, this.y_coord, function(x, y) {
                 steps.push([x, y]);
-            });
-            if (steps.length > 1)
+            }); // fill the array
+            if (steps.length > 1) // if we are not on the stairs, move towards them
             {
                 var nextX = steps[1][0], nextY = steps[1][1];
                 this.move(nextX, nextY);
             }
-            else
+            else // otherwise start a new level.
             {
                 Map.takeFromSchedule(this);
                 Map.generateMap();
@@ -539,17 +558,19 @@ Game.Mixins.Actor_Mixins.Player = {
         this._messageDisplay.drawText(1, 1, Game._messages + '', 23);
         Game._messages = [];
     },
+    // called once each turn by scheduler
     act: function() {
-        this.processSounds();
-        this.drawFOV();
-        Map.getEngine().lock();
-        this._shieldRaised = false;
-        this._timesMoved = 0;
-        window.addEventListener("keydown", this);
+        this.processSounds(); // plays sounds
+        this.drawFOV(); // draws what the player can see
+        Map.getEngine().lock(); // stops other actors acting
+        this._shieldRaised = false; // puts down shield for this turn
+        this._timesMoved = 0; // if this goes above 0, we can't move. prevents moving accross the map in one turn.
+        window.addEventListener("keydown", this); // make window respond to key presses
         this.refreshStatusDisplay();
         this.processMessages();
         this.drawFOV();
     },
+    // only one sound is played a turn, and they have an order of priority
     processSounds: function() {
 
         if(this._hasAttacked)
@@ -613,7 +634,7 @@ Game.Mixins.Actor_Mixins.Player = {
                     boolean = true
             }
             return boolean
-        }
+        }// callback checks whether the tile contains an enemy or obstruction
         return Map.isClear(target, callback);
     },
     calculatePath: function(coord, ents) {
@@ -622,8 +643,8 @@ Game.Mixins.Actor_Mixins.Player = {
         return  new ROT.Path.Dijkstra(parseInt(coordParts[0]), parseInt(coordParts[1]), function(x, y) {
             if (ents[x + ',' + y]['Door'])
                 return true;
-            return Map.isClear(x + ',' + y, that.checkObstruction);
-        });
+            return Map.isClear(x + ',' + y, that.checkObstruction);// callback checks whether the tile contains an obstruction
+        });//return a path free of obstructions, if there is one
     },
     countPotions: function() {
         return this.Potions;
@@ -635,10 +656,12 @@ Game.Mixins.Actor_Mixins.Player = {
         return this.currHealth;
     },
     exploreMap: function() {
+        // if we have found the center of the last room, the map can no longer be explored
         if (!(this._targetRoom < this._roomCenters.length))
         {
             return false;
         }
+        // otherwise fo to center of next room
         else
         {
             var coord = this._roomCenters[this._targetRoom] + '';
@@ -661,13 +684,15 @@ Game.Mixins.Actor_Mixins.Player = {
             return true;
         }
     },
+    // move once in a given direction, e.g., "N".
     step: function(direction) {
         var offset = ROT.DIRS[8][Game.directions[direction]];
         var newX = offset[0] + this.x_coord, newY = offset[1] + this.y_coord;
         this.move(newX, newY);
     },
+    // enemy is an optional argument: if given only a specific type of enemy specified will be searched for
     lookForEnemies: function(enemy) {
-        var enemies = [];
+        var enemies = []; // will contain the co-ordinated of enemies seen
         if (enemy)
             this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
                 var coord = x + ',' + y;
@@ -676,16 +701,17 @@ Game.Mixins.Actor_Mixins.Player = {
                         enemies.push(coord);
                     }
                 }
-            });
+            });// looks for any enemies and pushes them to the array
         else
             this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
                 var coord = x + ',' + y;
                 if (Map.entities[coord]['Enemy']) {
                     enemies.push(coord);
                 }
-            });
-        return enemies;
+            });// looks for named enemies and pushes them to the array
+        return enemies; // returns the array
     },
+    // as above, but with items
     lookForItems: function(item) {
         var items = [];
         if (item)
@@ -744,6 +770,7 @@ Game.Mixins.Actor_Mixins.Player = {
         Game.Sounds.treasureSound.play();
         this.clearSchedule();
     },
+    // attacks an enemy at a given co-ordinate
     attackEnemy: function(coord) {
         var ents = Map.getEntities();
         var Path = this.calculatePath(coord, ents);
@@ -757,6 +784,7 @@ Game.Mixins.Actor_Mixins.Player = {
             this.move(nextX, nextY);
         }
     },
+    // moves one step toward a coordinate coord; returns true if arrived.
     goTo: function(coord) {
         var ents = Map.getEntities();
         var Path = this.calculatePath(coord, ents);
@@ -764,34 +792,35 @@ Game.Mixins.Actor_Mixins.Player = {
         var steps = [];
         Path.compute(this.x_coord, this.y_coord, function(x, y) {
             steps.push([x, y]);
-        });
-        if (steps.length > 1)
+        });// calculate steps of path to destination
+        if (steps.length > 1) // if note there, step towards it
         {
             var nextX = steps[1][0], nextY = steps[1][1];
             this.move(nextX, nextY);
         }
         if (this.x_coord === parseInt(parts[0]) && this.y_coord === parseInt(parts[1]))
-            return true;
+            return true; // if there, return true.
     },
+    // helper method for movement methods
     move: function(targetX, targetY) {
-        if (this._timesMoved++ > 0)
+        if (this._timesMoved++ > 0)// don't move if we've done so this turn
             return;
         var ents = Map.entities[this.x_coord + ',' + this.y_coord];
         var target = targetX + ',' + targetY;
         var targEnts = Map.entities[target];
-        if (Map.isClear(target, this.checkObstruction))
+        if (Map.isClear(target, this.checkObstruction)) // check target tile is not obstructed (enemies are not obstructions)
         {
-            if (targEnts['Enemy'])
+            if (targEnts['Enemy']) // if it has an enemy, hit it and return
             {
                 this.strike(targEnts['Enemy']);
                 return;
             }
-            delete ents['Player'];
+            delete ents['Player']; //otherwise move player.
             this._facingStrike = false;
             this.x_coord = targetX, this.y_coord = targetY;
             targEnts['Player'] = this;
         }
-        else if (targEnts['Door'])
+        else if (targEnts['Door']) // if tile is obstructed by a door, open it.
         {
             targEnts['Door'].open(this);
             this._hasOpened=true;
@@ -802,9 +831,9 @@ Game.Mixins.Actor_Mixins.Player = {
           Game.codeExecuted=false;
           // Don't execute code if we've just unpaused
           var justUnpaused=false
-          if(e.keyCode==27)
+          if(e.keyCode==27) //  check if we pressed esc
           {
-           if(this._paused)
+           if(this._paused) // if so and game is paused, unpause it
              {
               this._paused=false;
               justUnpaused=true;
@@ -812,28 +841,29 @@ Game.Mixins.Actor_Mixins.Player = {
              }
            else
              {
-              this._paused=true
+              this._paused=true // otherwise pause it
                $(".brand").html("CodeQuest: Paused");
              }
           }
         var text
         if (this._paused||justUnpaused)
-           text="Stop the Game"
+           text="Stop the Game" // this will be evaluated and will throw an error, pausing the game.
         else {
-           text= $('#inputArea').val();
-           text = "var timer = 0;"+text.replace(/{/g,"{timer++;if (timer>100000)throw ' - Code is taking too long to execute - modify for or while loop before identified brace -';")
+           text= $('#inputArea').val(); // get the text of the code the user has written
+           text = "var timer = 0;"+text.replace(/{/g,"{timer++;if (timer>100000)throw ' - Code is taking too long to execute - modify for or while loop before identified brace -';") // inject code that prevents infinite loops by preventing too many braced instructions being executed.
            Game.codeExecuted=true
            }
-        eval(text);         
+        eval(text);         // exectite user code
         this._imminentStrike = false;
-        window.removeEventListener("keydown", this);
-        Map.getEngine().unlock();
+        window.removeEventListener("keydown", this); // stop listening for key-presses
+        Map.getEngine().unlock(); // let other actors act.
     },
+    // draw what the player can see
     drawFOV: function() {
         var display = Game.getDisplay();
-        var seenLastTurn = this._visible;
+        var seenLastTurn = this._visible; // Member of seenLastTurn will be fogged out if we cannot see them this turn
         var that = this;
-        this._visible = {}; 
+        this._visible = {}; // tracks all coords we've seen this turn
         this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
             var key = x + ',' + y;
             var ents = Map.entities[key];
@@ -841,20 +871,20 @@ Game.Mixins.Actor_Mixins.Player = {
             {
                 var actor = ents['Enemy'];
                 actor.setWhetherSeen(true);
-                actor.drawTarget();
+                actor.drawTarget();// only draw the target (the thing that shows where an enemy is looking) if we can see it.
             }
             else if (ents['Stair'] && (!that._seenStairCoord))
             {
                 that._seenStairCoord = key;
                 Game.queMessage("There's the Stairs!");
-            }
-            if (seenLastTurn[key])
+            }// check if we've seen the stairs
+            if (seenLastTurn[key]) // if we see a co-ordinate this turn remove it from seenLastTurn (we don't want to draw fog on it, then)
                 delete seenLastTurn[key];
             var coordTiles = Map.getCoordTiles(key);
-            display.draw(x, y, coordTiles);
-            that._visible[key] = true;
-        });
-        for (key in seenLastTurn)
+            display.draw(x, y, coordTiles); // draw all tiles at coord
+            that._visible[key] = true; // and remember we've seen it
+        });// contained code is executd for every coord we can see.
+        for (key in seenLastTurn) // draw the fog
         {
             var keyParts = key.split(',');
             display.draw(keyParts[0], keyParts[1], 'Fogged');
@@ -885,10 +915,10 @@ Game.Mixins.Actor_Mixins.Enemy = {
     groupName: 'Actor',
     init: function() {
         Map.addToSchedule(this);
-        this._HomeX = this.x_coord;
-        this._HomeY = this.y_coord;
+        this._HomeX = this.x_coord; // Will guard it's home coords,if passed the guards mixin
+        this._HomeY = this.y_coord; 
         this._steps = [];
-        this._facing = Math.floor(Math.random()*8);
+        this._facing = Math.floor(Math.random()*8); // will randomly face in a certain direction at the stat
         this._targetX = null;
         this._targetY = null;
         this._whetherSeen = false;
@@ -900,6 +930,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         };
         this._fov = new ROT.FOV.RecursiveShadowcasting(fovCallback);
     },
+    // helper method for act() function
     main: function() {
         this._messages = [];
         this._displacements = [];
@@ -913,20 +944,20 @@ Game.Mixins.Actor_Mixins.Enemy = {
                 that.pathToTarget(x, y);
                 seen = true;
             }
-        });
+        });// checks if player is spotted
         if (this._steps.length < 2 && (this._HomeX !== this.x_coord || this._HomeY !== this.y_coord))
-            this.pathToTarget(this._HomeX, this._HomeY);
-        else if (!seen && this._HomeX === this.x_coord && this._HomeY === this.y_coord)
+            this.pathToTarget(this._HomeX, this._HomeY); // if not home, create a path home
+        else if (!seen && this._HomeX === this.x_coord && this._HomeY === this.y_coord) // if home, perform idling behaviour
         {
             if (this.idle)
                 this.idle();
         }
         var hasShot = false;
-        if (seen)
+        if (seen) // if player is spotted
         {
-            if (this.Arrows)
+            if (this.Arrows) // then if arrows are posessed.
             {
-                this.arrowStrike(player);
+                this.arrowStrike(player); // shoot player
                 hasShot = true;
             }
             this._fov.compute(this.x_coord, this.y_coord, 8, function(x, y) {
@@ -936,13 +967,13 @@ Game.Mixins.Actor_Mixins.Enemy = {
                     actor.turnToTarget(that);
                     actor.drawTarget();
                 }
-            });
+            }); // And regardless inform all other enemies in the vicinity of the player's presence
         }
-        if (!hasShot)
+        if (!hasShot) // if an arrow was not shot, move.
         {
             this.walkToTarget();
         }
-        this.drawTarget();
+        this.drawTarget(); // draws the facing-durection
         this.setWhetherSeen(false);
     },
     turnToTarget: function(actor) {
@@ -951,6 +982,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         var direction = xpoint + ',' + ypoint;
         this._facing = Game.offsets[direction];
     },
+    // moves to next steo on the player's path
     walkToTarget: function() {
         if (this._steps.length && this._steps.length > 1) {
             this._steps.splice(0, 1);
@@ -961,6 +993,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
             this.drawTarget();
         }
     },
+    // Draws path to an x y coordinate
     pathToTarget: function(x, y) {
         this._targetX = x;
         this._targetY = y;
@@ -973,16 +1006,17 @@ Game.Mixins.Actor_Mixins.Enemy = {
             that._steps.push([x, y]);
         });
     },
+    // draws the facing drection  of the enemy with a candle
     drawTarget: function() {
-        var offsetX = ROT.DIRS[8][this._facing][0];
+        var offsetX = ROT.DIRS[8][this._facing][0]; // translates current facing direction to x,y offset
         var offsetY = ROT.DIRS[8][this._facing][1];
         if (this._targetKey)
-            delete Map.entities[this._targetKey]['Target'];
-        if (!this._whetherSeen)
+            delete Map.entities[this._targetKey]['Target']; // if a target is already drawn, remove it
+        if (!this._whetherSeen) // if enemy isn't seen, don't draw its target
             return;
-        var targetX = offsetX + this.x_coord, targetY = offsetY + this.y_coord;
-        new Game.Entity({template: Game.Templates.TargetTemplates.Target, x_coord: targetX, y_coord: targetY});
-        this._targetKey = targetX + ',' + targetY;
+        var targetX = offsetX + this.x_coord, targetY = offsetY + this.y_coord; // get where target should be drawn
+        new Game.Entity({template: Game.Templates.TargetTemplates.Target, x_coord: targetX, y_coord: targetY}); // draw it
+        this._targetKey = targetX + ',' + targetY; // remember where it is
     },
     move: function(targetX, targetY) {
         var ents = Map.entities[this.x_coord + ',' + this.y_coord];
@@ -1025,6 +1059,7 @@ Game.Mixins.Actor_Mixins.Enemy = {
         this.setDisplacements();
         return this.x_coord === this._targetX && this.y_coord === this._targetY;
     },
+    // is used to track empty adjacent spaces
     setDisplacements: function() {
         var that = this;
         var callback = function(x, y) {
@@ -1034,27 +1069,28 @@ Game.Mixins.Actor_Mixins.Enemy = {
             if (!Map.isClear(coord, that.checkObstruction))
                 return true;
         };
-        var thisNbrs = Map.getNeighbCoords(this.x_coord, this.y_coord, callback);
+        var thisNbrs = Map.getNeighbCoords(this.x_coord, this.y_coord, callback);// get spaces adjacent to the actor not containing obstructions or enemies.
         var intersect = function(x, y) {
             if (!thisNbrs[x + ',' + y])
                 return true;
         }
-        var trgNbrs = Map.getNeighbCoords(this._targetX, this._targetY, intersect);
+        var trgNbrs = Map.getNeighbCoords(this._targetX, this._targetY, intersect);// get spaces from thisNbrs adjacent to the actors target not containing obstructions or enemies.
         for (key in trgNbrs)
-            this._displacements.push(key);
+            this._displacements.push(key); // remember these
     },
+    // is called when an enemy gets pushed ot the way by another
     getDisplaced: function() {
         var dsplm = this._displacements;
-        var eligible = [];
+        var eligible = []; // will contain coords that this can be pushed into
         for (i = 0; i < dsplm.length; i++)
         {
             if (!(Map.entities[dsplm[i]]['Enemy'] || Map.entities[dsplm[i]]['Player']))
                 eligible.push(dsplm[i]);
-        }
-        var coord = eligible[Math.floor(Math.random() * eligible.length)]
-        if (!eligible.length)
+        }// if a coord in this._displacements does not contain an enemy or obstruction, this can be dosplaced into it.
+        var coord = eligible[Math.floor(Math.random() * eligible.length)]// pick a random coord that this can be displaced into
+        if (!eligible.length) // if none are eligible, return
             return false;
-        var parts = coord.split(",");
+        var parts = coord.split(","); // otherwise move to the random eligible coord.
         this.move(parseInt(parts[0]), parseInt(parts[1]));
         return true;
     },
@@ -1069,7 +1105,7 @@ Game.Mixins.Actor_Mixins.Minotaur = {
         this._clubRaisedAt = false;
     },
     act: function() {
-        if (this._offBalance)
+        if (this._offBalance)// if minotaur missed, it will be offbalance and not do anything
         {
             this._offBalance = false;
             Game.queMessage("The " + this._name + " regains its balance.");

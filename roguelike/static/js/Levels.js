@@ -1,5 +1,8 @@
-Game.Levels=[];
+/*
+Each level is an array of rooms. Each room generated in the level has an equal chance of being one of the rooms in the array.
+*/
 
+Game.Levels=[];
 
 Game.Levels[0]=[Game.Templates.RoomTemplates.EmptyRoom1,
             Game.Templates.RoomTemplates.EmptyRoom2,

@@ -1,3 +1,7 @@
+/*
+This is a mapping of strings to images - sections of tileset.png,
+*/
+
 Game.imageMap = {
                 '#': [48, 48],
                 'Concrete_SW_Corner': [0, 80], //SW corner
@@ -22,6 +26,7 @@ Game.imageMap = {
                 'Target':[48,16],
                 'LeftChair':[0,16],
                 'RightChair':[32,16],
+		'Bed':[48,80],
                 'Table':[16,16],
                 'Grave':[16,32],
                 'Skull':[48,32],

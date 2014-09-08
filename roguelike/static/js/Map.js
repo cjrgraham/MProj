@@ -1,14 +1,18 @@
+/*
+This handles level generation, and everything that persists within a level.
+*/
+
 var Map = {
-    _engine: null,
-    _scheduler: null,
+    _engine: null, // stop and start this to make actors act
+    _scheduler: null, // add actors to this to give them a chance to act; remove them when they die.
     _player:null,
     _level: 0,
     generateMap: function() {
         //ROT.RNG.setSeed(1407692687798);
-        this.entities = {};
+        this.entities = {}; // this will contain all entities on the map. Not directly, but via co-ordinate objects. E.g,: this.entities["4","3"] will yield an object with all entities at x=4, y=3.
         this._scheduler = (new ROT.Scheduler.Simple());
         this._engine = new ROT.Engine(this._scheduler);
-        this._grid = new ROT.Map.Digger();
+        this._grid = new ROT.Map.Digger(); // Digger is a type of ROT.js Map.
         var oDirs = ['N', 'NW', 'W', 'SW'];
         var thsDirs = ['S', 'SE', 'E', 'NE'];
         var offset = [[0, -1], [-1, -1], [-1, 0], [-1, 1]];
@@ -26,9 +30,9 @@ var Map = {
             else
                 new Game.Entity({template: Game.Templates.TileTemplates.FloorTile, x_coord: x, y_coord: y, kind: 'Concrete'});
 
-        };
+        };// this callback is used to build the floors and walls of the level: adds a wall if we encounter a 1; a floor if we encounter a 0. updateNeighbour() notifies a wall of its neghbours and the neighbours of that wall: this allows wall-graphics to be rendered properly.
 
-        this._grid.create(digCallback);
+        this._grid.create(digCallback); //callback is used here
 
         var setDoor = function(x, y) {
             new Game.Entity({template: Game.Templates.DoorTemplates.Door, x_coord: x, y_coord: y});
@@ -37,10 +41,13 @@ var Map = {
         for (var i = 0; i < rooms.length; i++) {
             rooms[i].getDoors(setDoor);
 
-        }
+        }//we use another callback to place the doors
         this.setAllWalls();
         this.sortRooms();
     },
+    /*
+    A cumbersome method: interprets the contents of a wall-tile's neghbour array and assigns it the appropriate tile. Does this by handling special cases.
+    */
     setWallTile: function(key) {
         var tile = this.entities[key]['Wall'];
         var len = tile.getSize();
@@ -216,6 +223,9 @@ var Map = {
 
         }
     },
+    /*
+    Can be used to check the status of all entities at a tile, depending on the callback passed. Use it to, e.g., check if a co-ordinate on the map is empty.
+    */
     isClear: function(coord, callback) {
         var clear = true;
         var ents = this.entities[coord];
@@ -232,6 +242,7 @@ var Map = {
     setLevel: function(number) {
 	this._level=number;
     },
+    // Returns all graphical tiles at a co-ordinate.
     getCoordTiles: function(key) {
         var ents = this.entities[key];
         var entityTiles = []
@@ -239,6 +250,7 @@ var Map = {
             entityTiles.push(ents[key2].getTile());
         return entityTiles;
     },
+    // returns an array containing all adjacent co-ordinated to the co-ordinate passed. Callback can be used to filter these. Usefull to check, e.g., all adjacent co-ordinates which can be moved to.
     getNeighbCoords: function(x, y, callback) {
         var coords = {};
         for (i = 0; i < 8; i++)
@@ -246,7 +258,6 @@ var Map = {
             var boolean = true;
             var xcoord = ROT.DIRS[8][i][0] + parseInt(x);
             var ycoord = ROT.DIRS[8][i][1] + parseInt(y);
-            //           console.log("Last:"+xcoord+','+ycoord);
             if (callback)
             {
                 if (callback(xcoord, ycoord))
@@ -257,15 +268,20 @@ var Map = {
         }
         return coords;
     },
+    /*
+    This function creates all rooms. By which I mean, creates their contents.
+    */
     sortRooms: function() {
         var rooms = this._grid.getRooms();
+        // get center of first room (to put the player in)
         var center = rooms[0].getCenter();
         var x = center[0], y = center[1];
         var level = Game.Levels[this._level++];
-      
+        // for each room on the map other than the first or last, create a room picked randomly from the current level template.
         for (var i = 1; i < rooms.length-1; i++) {
             new Game.Room({Room: rooms[i], template: level[Math.floor(Math.random() * level.length)]});
         }
+        // last room should have down-stairs if we are not on the last level; the treasure chest if we are.
         if(this._level===Game.Levels.length)
         {
                     new Game.Room({Room: rooms[rooms.length-1], template: 
@@ -276,6 +292,7 @@ var Map = {
         new Game.Room({Room: rooms[rooms.length-1], template: 
                 Game.Templates.RoomTemplates.StairRoom});
         }
+        // if the player already exists, add the player to the new level.
         if (this._player)
         {
             this._player.x_coord=x;
@@ -284,6 +301,7 @@ var Map = {
             this._player.setUpForFloor();
         }
         else
+        // otherwise create new player.
         this._player= new Game.Entity({template: Game.Templates.ActorTemplates.PlayerTemplate,
             x_coord: x, y_coord: y});
 

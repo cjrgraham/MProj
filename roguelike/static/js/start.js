@@ -1,3 +1,7 @@
+/*
+This file attaches the display areas to the webpage, generates the map and starts the game engine (makes actors act).
+*/
+
 window.onload = function() {
     Game.init();
     var playField = Game.getDisplay().getContainer()

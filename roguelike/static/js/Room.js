@@ -1,3 +1,7 @@
+/*
+Rooms are elements which are not located at a co-ordinate
+*/
+
 Game.Room = function(properties) {
     properties = properties || {};
     var room = properties['Room'] || {};
@@ -10,6 +14,7 @@ Game.Room = function(properties) {
     this._yMin = parseInt((room.getTop()));
     this._yMax = parseInt((room.getBottom()));
     this._freeCoords = [];
+    // Record all the free co-ordinates in the room.
     for (counter = 0, x = this._xMin; x <= this._xMax; x++, counter++)
     {
         this._freeCoords.push([x, []]);
@@ -24,8 +29,14 @@ Game.Room = function(properties) {
     Game.Element.call(this, properties);
 };
 
+
+// Extend Game.Element
 Game.Room.prototype.constructor = Game.Element;
 
+/*
+Returns a random co-ordinate in the room. Can specify the x co-ordinate desired with suppliedX.
+After co-ordinate is returned, it is removed from freecoords
+*/
 Game.Room.prototype.getRandomPlace = function(suppliedX) {
     var xIndex = null;
     var yIndex = null;
@@ -52,6 +63,7 @@ Game.Room.prototype.getRandomPlace = function(suppliedX) {
     }
 }
 
+// Returns a random co-ordinate at the top of the room. Used to place decoration.
 Game.Room.prototype.getRandomTopPlace = function() {
     var freePlace = [];
     for (x = 0; x < this._freeCoords.length; x++)

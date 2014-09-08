@@ -1,3 +1,7 @@
+/*
+This is a mapping of strings to images - sections of tileset.png. This constitutes the tileset for my game.
+*/
+
 Game.imageMap = {
                 '#': [48, 48],
                 'Concrete_SW_Corner': [0, 80], //SW corner

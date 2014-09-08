@@ -1,12 +1,11 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Room templates contain mixins which place entities in the room in a certain way. This file contains these mixins and templates.
  */
 
 
 Game.Mixins.Room_Mixins = {};
 
+// Puts an entity made with a template at a random free co-ordinate in a room
 var placeEntity = function(room, template) {
     var coord = room.getRandomPlace();
     if (coord)
@@ -19,6 +18,7 @@ var placeEntity = function(room, template) {
         console.log("error")
 }
 
+// As above, but at the top of the room.
 var placeEntityAtTop = function(room, template) {
     var coord = room.getRandomTopPlace();
     if (coord)
@@ -49,6 +49,8 @@ var placeEntityAtTop = function(room, template) {
 
 }
 
+// The init function of each room mixin places an entity/entities in any room built with a template which includes the room mixin in question.
+
 Game.Mixins.Room_Mixins.hasPotions = {
     name: 'hasPotions',
     init: function() {
@@ -77,6 +79,7 @@ Game.Mixins.Room_Mixins.hasOrc = {
     }
 }
 
+// minotaurs are surrounded by bones and skulls
 Game.Mixins.Room_Mixins.hasMinotaur = {
     name: 'hasMinotaur',
     init: function() {
@@ -89,6 +92,7 @@ Game.Mixins.Room_Mixins.hasMinotaur = {
     }
 }
 
+// tables go in the middles of a room
 Game.Mixins.Room_Mixins.hasTableSet = {
     name: 'hasTableSet',
     init: function() {
@@ -231,7 +235,7 @@ Game.Mixins.Room_Mixins.hasOrcWarrior = {
 }
 Game.Templates.RoomTemplates = {}
 
-
+// Room templates are arrays of room mixins: the room is created by having each of these mixins init functions called, which places the entities associated with them.
 Game.Templates.RoomTemplates.BedRoom = {
     mixins: [Game.Mixins.Room_Mixins.hasTableSet, Game.Mixins.Room_Mixins.hasBed, Game.Mixins.Room_Mixins.hasBookShelf, Game.Mixins.Room_Mixins.hasShelf1,Game.Mixins.Room_Mixins.hasPot]
 };

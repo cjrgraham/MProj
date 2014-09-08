@@ -1,3 +1,7 @@
+/*
+The game object contains the game data that persists between levels, e.g., the displays, their settings, and methods to manipulate them.
+*/
+
 var Game = {
     _display: null,
     _screenWidth: 79,
@@ -12,6 +16,7 @@ var Game = {
             tileWidth: 16,
             tileHeight: 16,
             tileSet: tileSet,
+            // A mapping of strings to images.
             tileMap: Game.imageMap
         };
         this._display = new ROT.Display(options);

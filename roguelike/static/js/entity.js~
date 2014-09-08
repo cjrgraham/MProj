@@ -1,5 +1,5 @@
 // Code adapted from https://github.com/jokeofweek/jsrogue/blob/part8a/assets/entity.js
-// Entities are elements that appear on the map. 
+
 
 Game.Entity = function(properties) {
     properties = properties || {};
@@ -21,7 +21,6 @@ Game.Entity = function(properties) {
     Map.entities[key][this._category + ''] = this;
 };
 
-// extends Game.element constructor
 Game.Entity.prototype.constructor = Game.Element;
 
 Game.Entity.prototype.setTile = function(char) {
